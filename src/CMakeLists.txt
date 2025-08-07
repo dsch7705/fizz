@@ -1,6 +1,7 @@
 set(SRC main.cpp
         dvec.cpp
-        solver.cpp)
+        solver.cpp
+        systems.cpp)
 
 add_executable(gravity ${SRC})
 

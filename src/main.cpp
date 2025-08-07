@@ -5,6 +5,8 @@
 #include <raylib.h>
 
 #include "solver.h"
+#include "systems.h"
+#include "util.h"
 
 
 constexpr double kPixelsPerMeter { 60.0 };
@@ -96,19 +98,31 @@ public:
             //    DrawLine(b0_screenSpace.x, b0_screenSpace.y, b1_screenSpace.x, b1_screenSpace.y, BLACK);
             //}
             
-            if (i < 2)
-            {
-                continue;
-            }
+            //if (i < 2)
+            //{
+            //    continue;
+            //}
 
-            DrawCircle(b0_screenSpace.x, b0_screenSpace.y, b0.radius * kPixelsPerMeter, WHITE);
+            //DrawCircle(b0_screenSpace.x, b0_screenSpace.y, b0.radius * kPixelsPerMeter, WHITE);
 
             if (drawPath)
             {
                 BeginTextureMode(renderTex);
-                static Color pathCol { 255, 0, 0, 2 };
-                static Color pathCol2 { 127, 0, 128, 2 };
-                DrawCircle(b0_screenSpace.x, kScreenHeight - b0_screenSpace.y, 3, i % 2 ? pathCol : pathCol2);
+                static Color pathCol1 { 255, 95, 30, 1 };
+                static Color pathCol2 { 255, 0, 255, 1 };
+                //static Color pathCol3 { 0, 255, 0, 1 };
+
+                Color pathCol;
+                switch (i % 2)
+                {
+                case 0:
+                    pathCol = pathCol1;
+                    break;
+                case 1:
+                    pathCol = pathCol2;
+                    break;
+                }
+                DrawCircle(b0_screenSpace.x, kScreenHeight - b0_screenSpace.y, 2, pathCol);
                 EndTextureMode(); 
             }
         }        
@@ -128,12 +142,12 @@ int main(int argc, char** argv)
     double accumulator { 0 };
 
     DVec2 anchor { kMetersWidth / 2.0, kMetersHeight / 2.0 };
-    double anchorDistance { 2.4 };
 
-    double startAngle { -PI / 3 };
-    DVec2 startVec { cos(startAngle) * anchorDistance, sin(startAngle) * anchorDistance };
+    const int nLinks { 4 };
+    const double dist = (kMetersHeight / 2.0) / nLinks;
 
-    Pendulum p(3, anchor, anchorDistance);
+    //Pendulum p(nLinks, anchor, dist);
+    //IKArm arm(anchor, nLinks, dist * 0.75);
 
     RenderTexture2D bg = LoadRenderTexture(kScreenWidth, kScreenHeight);
     BeginTextureMode(bg);
@@ -142,34 +156,63 @@ int main(int argc, char** argv)
 
     double startTime { 0 };
     double elapsedTime { 0 };
+
+    Body b0({ kMetersWidth / 2.0, kMetersHeight / 2.0 }, 0.25);
+    Body bPivot({ kMetersWidth / 2.0 + 2.0, kMetersHeight / 2.0 }, 0.15, true);
+    Body b1({ kMetersWidth / 2.0 + 2.0, kMetersHeight / 2.0 + 2.0 }, 0.25);
+    AngleConstraint ac(&b0, &b1, &bPivot, PI / 4, 0.2);
+    DistanceConstraint dc0(&b0, &bPivot, 2.0);
+    DistanceConstraint dc1(&bPivot, &b1, 2.0);
+
     while(!WindowShouldClose())
     {
         startTime = GetTime();
-        if (IsKeyPressed(KEY_SPACE))
-        {
-            if (p.go)
-            {
-                p.drop();
-            }
-            else
-            {
-                p.go = true;
-            }
-        }
+        //if (IsKeyPressed(KEY_SPACE))
+        //{
+        //    if (p.go)
+        //    {
+        //        p.drop();
+        //    }
+        //    else
+        //    {
+        //        p.go = true;
+        //    }
+        //}
+
+        DVec2 mousePos { static_cast<double>(GetMouseX()), static_cast<double>(GetMouseY()) };
 
         while (accumulator >= kPhysicStep)
         {
-            p.update(kPhysicStep, 1);
+            //p.update(kPhysicStep, 1);
+            //arm.update(kPhysicStep, 1, screenToWorld(mousePos));
+
+            b0.integrateVerlet(kAccGravity, kPhysicStep);
+            b1.integrateVerlet(kAccGravity, kPhysicStep);
+
+            ac.solve();
+            dc0.solve();
+            dc1.solve();
+
             accumulator -= kPhysicStep;
         }
 
         BeginDrawing();
 
-        DrawTexture(bg.texture, 0, 0, WHITE);
-        p.draw(bg);
+        //DrawTexture(bg.texture, 0, 0, WHITE);
+        //p.draw(bg);
+        ClearBackground(GRAY);
+        //arm.draw();
 
         //std::string fpsStr = "FPS: " + std::to_string(1.0 / elapsedTime);
         //DrawText(fpsStr.c_str(), 10, 10, 16, LIME);
+
+        DVec2 b0_screenSpace = worldToScreen(b0.pos);
+        DVec2 bPivot_screenSpace = worldToScreen(bPivot.pos);
+        DVec2 b1_screenSpace = worldToScreen(b1.pos);
+
+        DrawLine(b0_screenSpace.x, b0_screenSpace.y, bPivot_screenSpace.x, bPivot_screenSpace.y, BLACK);
+        DrawLine(bPivot_screenSpace.x, bPivot_screenSpace.y, b1_screenSpace.x, b1_screenSpace.y, BLACK);
+
 
         EndDrawing();
         

@@ -32,8 +32,25 @@ struct Constraint
 };
 struct DistanceConstraint : public Constraint
 {
-    DistanceConstraint(Body* _b0, Body* _b1, double _distance) : Constraint(_b0, _b1), distance(_distance) {}
+    DistanceConstraint(Body* _b0, Body* _b1, double _distance) 
+    : Constraint(_b0, _b1)
+    , distance(_distance) {}
+
     double distance;
+    
+    void solve() override;
+};
+struct AngleConstraint : public Constraint
+{
+    AngleConstraint(Body* _b0, Body* _b1, Body* _pivot, double _angle, double _stiffness)
+    : Constraint(_b0, _b1)
+    , pivot(_pivot)
+    , angle(_angle)
+    , stiffness(_stiffness) {}
+
+    Body* pivot;
+    double angle;
+    double stiffness;
 
     void solve() override;
 };

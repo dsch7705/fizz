@@ -49,6 +49,28 @@ DVec2 DVec2::normalize(const DVec2& vec)
     norm.normalize();
     return norm;
 }
+double DVec2::dot(const DVec2& other) const
+{
+    return (x * other.x + y * other.y);
+}
+double DVec2::dot(const DVec2& first, const DVec2& second)
+{
+    return first.dot(second);
+}
+void DVec2::rotate(double theta)
+{
+    double x2 = cos(theta) * x - sin(theta) * y;
+    double y2 = sin(theta) * x + cos(theta) * y;
+
+    x = x2;
+    y = y2;
+}
+DVec2 DVec2::rotate(const DVec2& vec, double theta)
+{
+    DVec2 newVec = vec;
+    newVec.rotate(theta);
+    return newVec;
+}
 
 std::ostream& operator<<(std::ostream& os, const DVec2& vec)
 {

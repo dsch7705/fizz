@@ -25,6 +25,12 @@ struct DVec2
     void normalize();
     static DVec2 normalize(const DVec2& vec);
 
+    double dot(const DVec2& other) const;
+    static double dot(const DVec2& first, const DVec2& second);
+
+    void rotate(double theta);
+    static DVec2 rotate(const DVec2& vec, double theta);
+
     void operator+=(const DVec2& other)
     {
         add(other);
