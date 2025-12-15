@@ -1,9 +1,10 @@
 set(SRC main.cpp
         dvec.cpp
+        util.cpp
         solver.cpp
         systems.cpp)
 
-add_executable(gravity ${SRC})
+add_executable(fizz ${SRC})
 
-target_include_directories(gravity PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_link_libraries(gravity PRIVATE raylib)
+target_include_directories(fizz PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(fizz PRIVATE raylib)
