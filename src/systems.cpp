@@ -115,7 +115,7 @@ void Pendulum::draw(const RenderTexture2D& renderTex)
 
   for (int i = 0; i < m_bodies.size(); ++i) {
     Body& b0 = m_bodies[i];
-    // b0.draw(RED);
+    b0.draw(BLACK);
 
     if (drawPath) {
       BeginTextureMode(renderTex);
@@ -167,7 +167,7 @@ int System::createBody(const DVec2& pos, double radius, bool isKinematic, double
   int id = nextId();
 
   Body body(pos, radius, isKinematic);
-  m_bodies.emplace(id, body);
+  m_bodies.emplace(id, std::move(body));
   return id;
 }
 Body* System::getBody(int id)

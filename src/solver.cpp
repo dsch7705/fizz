@@ -93,7 +93,7 @@ void SpringConstraint::solve()
 
   DVec2 n = diff / mag;
 
-  // Hooke's Law:
+  // Hooke's Law
   double x = mag - length;
   double Fs = -k * x;
 
