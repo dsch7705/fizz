@@ -1,14 +1,12 @@
 #pragma once
 
-#include "constants.h"
-#include "solver.h"
-#include "util.h"
-
-#include "raylib.h"
+#include "Body.h"
+#include "Constraint.h"
 
 #include <memory>
 #include <unordered_map>
-#include <vector>
+
+class Body;
 
 class System {
  private:
@@ -68,19 +66,4 @@ class System {
  private:
   std::unordered_map<int, std::unique_ptr<Body>> m_bodies;
   std::unordered_map<int, std::unique_ptr<Constraint>> m_constraints;
-};
-
-class Pendulum : public System {
- public:
-  Pendulum(int nLinks, const DVec2& anchor, double distance, bool springs = false);
-
-  double calcPotentialEnergy();
-  double calcKineticEnergy();
-
-  Body* head() const { return m_head; }
-  Body* tail() const { return m_tail; }
-
- private:
-  Body* m_head{nullptr};
-  Body* m_tail{nullptr};
 };

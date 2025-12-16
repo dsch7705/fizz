@@ -15,3 +15,7 @@ endif()
 
 add_subdirectory(lib/raylib)
 add_subdirectory(src)
+
+add_executable(fizz main.cpp)
+target_include_directories(fizz PRIVATE include)
+target_link_libraries(fizz PRIVATE Fizz::Core Fizz::Constraint Fizz::Systems raylib)

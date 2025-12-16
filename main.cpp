@@ -3,8 +3,14 @@
 #include <iostream>
 #include <thread>
 
-#include "constants.h"
-#include "system.h"
+#include "fizz/core/Constants.h"
+#include "fizz/core/System.h"
+
+#include "fizz/constraint/DistanceConstraint.h"
+#include "fizz/constraint/PositionConstraint.h"
+#include "fizz/constraint/SpringConstraint.h"
+
+#include "fizz/systems/Pendulum.h"
 
 int main(int argc, char** argv)
 {
@@ -28,7 +34,6 @@ int main(int argc, char** argv)
   const int nLinks{2};
   const double dist = (kMetersHeight / 2.0) / nLinks * .9;
   Pendulum* p = System::createSystem<Pendulum>(nLinks, anchor, dist, false);
-  p->tail()->mass = 10.0;
 
   System* sys = System::createSystem();
 
@@ -66,18 +71,19 @@ int main(int argc, char** argv)
   sys->createConstraint<DistanceConstraint>(b4, b1);
   sys->createConstraint<DistanceConstraint>(b4, b2);
 
-  auto borderConstraint = sys->createConstraint<PositionConstraint>(DVec2(0.0), DVec2(kMetersWidth, kMetersHeight), 0.8,
-                                                                    b0, b1, b2, b3, b4);
-  borderConstraint->addSystem(p);
-  borderConstraint->addSystem(sys2);
+  PositionConstraint borderConstraint(DVec2(0.0), DVec2(kMetersWidth, kMetersHeight), 0.8);
+  borderConstraint.addSystem(p);
+  borderConstraint.addSystem(sys);
+  borderConstraint.addSystem(sys2);
 
   while (!WindowShouldClose()) {
     startTime = GetTime();
     if (IsKeyPressed(KEY_SPACE)) {
-      DVec2 doohickyImpulse(std::rand() % 300 - 150, std::rand() % 400 - 200);
-      b0->addImpulse(doohickyImpulse / 2);
-      b3->addImpulse(doohickyImpulse / 24);
-      p->tail()->addImpulse(doohickyImpulse / 32);
+      // DVec2 doohickyImpulse(std::rand() % 300 - 150, std::rand() % 400 - 200);
+      // b0->addImpulse(doohickyImpulse / 2);
+      // b3->addImpulse(doohickyImpulse / 24);
+      // p->tail()->addImpulse(doohickyImpulse / 32);
+      p->head()->isKinematic = !p->head()->isKinematic;
     }
     if (IsKeyPressed(KEY_G)) {
       p->toggleGravity();
@@ -87,6 +93,7 @@ int main(int argc, char** argv)
     DVec2 mousePos{static_cast<double>(GetMouseX()), static_cast<double>(GetMouseY())};
 
     while (accumulator >= kPhysicStep) {
+      borderConstraint.solve();
       p->update();
       // sys->update();
       // sys2->update();
