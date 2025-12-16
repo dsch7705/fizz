@@ -1,11 +1,25 @@
 #include "solver.h"
 #include "constants.h"
+#include "system.h"
 #include "util.h"
 
 #include "raylib.h"
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
+
+Body::Body(System* system, const DVec2& pos, double radius, bool isKinematic, double mass)
+    : m_pos(pos),
+      m_lastPos(pos),
+      m_velocity({0.0, 0.0}),
+      m_acceleration({0.0, 0.0}),
+      m_radius(radius),
+      m_mass(mass),
+      m_isKinematic(isKinematic)
+{
+  m_id = System::nextId();
+}
 
 void Body::integrateVerlet()
 {
@@ -22,7 +36,6 @@ void Body::integrateVerlet()
 
   m_acceleration = {0.0, 0.0};
 }
-
 void Body::addForce(DVec2 f)
 {
   // F = M * A
@@ -30,44 +43,56 @@ void Body::addForce(DVec2 f)
 
   m_acceleration += f / m_mass;
 }
-
 void Body::addImpulse(const DVec2& j)
 {
   DVec2 dv = j / m_mass;
   m_lastPos -= dv * kPhysicStep;
 }
-
 void Body::accelerate(DVec2 a)
 {
   m_acceleration += a;
 }
-
 void Body::draw(Color c) const
 {
   DVec2 screenPos = worldToScreen(m_pos);
   DrawCircle(screenPos.x, screenPos.y, m_radius * kPixelsPerMeter, c);
 }
-
 void Body::setPos(const DVec2& pos)
 {
   m_pos = pos;
   m_lastPos = pos;
 }
 
+Constraint::Constraint()
+{
+  m_id = System::nextId();
+}
+
+void RangeConstraint::addSystem(System* system)
+{
+  assert(system != nullptr);
+
+  for (auto& [_, body] : system->bodies()) {
+    addBody(body.get());
+  }
+}
+
 void DistanceConstraint::solve()
 {
-  DVec2& v0 = b0->m_pos;
-  DVec2& v1 = b1->m_pos;
+  assert(m_b0 != nullptr && m_b1 != nullptr);
+
+  DVec2& v0 = m_b0->m_pos;
+  DVec2& v1 = m_b1->m_pos;
   DVec2 diff = v1 - v0;
   double mag = diff.mag();
   diff.normalize();
 
   double delta = mag - distance;
 
-  if (b0->m_isKinematic) {
+  if (m_b0->m_isKinematic) {
     v1 -= diff * delta;
   }
-  else if (b1->m_isKinematic) {
+  else if (m_b1->m_isKinematic) {
     v0 += diff * delta;
   }
   else {
@@ -77,15 +102,19 @@ void DistanceConstraint::solve()
 }
 void DistanceConstraint::draw()
 {
-  DVec2 p0 = worldToScreen(b0->m_pos);
-  DVec2 p1 = worldToScreen(b1->m_pos);
+  assert(m_b0 != nullptr && m_b1 != nullptr);
+
+  DVec2 p0 = worldToScreen(m_b0->m_pos);
+  DVec2 p1 = worldToScreen(m_b1->m_pos);
   DrawLine(p0.x, p0.y, p1.x, p1.y, BLACK);
 }
 
 void SpringConstraint::solve()
 {
-  DVec2 p0 = b0->pos();
-  DVec2 p1 = b1->pos();
+  assert(m_b0 != nullptr && m_b1 != nullptr);
+
+  DVec2 p0 = m_b0->pos();
+  DVec2 p1 = m_b1->pos();
   DVec2 diff = p1 - p0;
   double mag = diff.mag();
   if (mag == 0)
@@ -97,40 +126,42 @@ void SpringConstraint::solve()
   double x = mag - length;
   double Fs = -k * x;
 
-  DVec2 v0 = b0->velocity();
-  DVec2 v1 = b1->velocity();
+  DVec2 v0 = m_b0->velocity();
+  DVec2 v1 = m_b1->velocity();
   DVec2 vrel = v1 - v0;
 
   double c = damping;
   if (c < 0.0) {  // Apply critical damping if the damping factor is below zero
-    double m = (b0->mass() * b1->mass()) / (b0->mass() + b1->mass());
+    double m = (m_b0->mass() * m_b1->mass()) / (m_b0->mass() + m_b1->mass());
     c = 2 * sqrt(k * m);
   }
   double Fd = -c * vrel.dot(n);
 
   double force = Fs + Fd;
-  if (b0->m_isKinematic) {
-    b1->addForce(diff * force);
+  if (m_b0->m_isKinematic) {
+    m_b1->addForce(diff * force);
   }
-  else if (b1->m_isKinematic) {
-    b0->addForce(-diff * force);
+  else if (m_b1->m_isKinematic) {
+    m_b0->addForce(-diff * force);
   }
   else {
-    b0->addForce(-diff * (force / 2));
-    b1->addForce(diff * (force / 2));
+    m_b0->addForce(-diff * (force / 2));
+    m_b1->addForce(diff * (force / 2));
   }
 }
 void SpringConstraint::draw()
 {
-  DVec2 p0 = b0->pos();
-  DVec2 p1 = b1->pos();
+  assert(m_b0 != nullptr && m_b1 != nullptr);
+
+  DVec2 p0 = m_b0->pos();
+  DVec2 p1 = m_b1->pos();
   DVec2 n = p1 - p0;
   double mag = n.mag();
   n.normalize();
   DVec2 perp = {-n.y, n.x};
 
   constexpr float coil_spacing = 15.f;
-  float half_w = std::min(b0->radius(), b1->radius()) * kPixelsPerMeter;
+  float half_w = std::min(m_b0->radius(), m_b1->radius()) * kPixelsPerMeter;
 
   int n_coils = (length * kPixelsPerMeter) / coil_spacing;
   for (int i = 0; i < n_coils; i++) {
@@ -149,51 +180,30 @@ void SpringConstraint::draw()
 
 void PositionConstraint::solve()
 {
-  DVec2& p0 = b0->m_pos;
-  DVec2& p0_last = b0->m_lastPos;
-  DVec2 Dp0 = p0 - p0_last;
-  Dp0.scale(bounce);
+  for (Body* b0 : m_bodies) {
+    assert(b0 != nullptr);
 
-  if (p0.x - b0->radius() < minPos.x) {
-    p0.x = minPos.x + b0->radius();
-    p0_last.x = p0.x + Dp0.x;
-  }
-  else if (p0.x + b0->radius() > maxPos.x) {
-    p0.x = maxPos.x - b0->radius();
-    p0_last.x = p0.x + Dp0.x;
-  }
+    DVec2& p0 = b0->m_pos;
+    DVec2& p0_last = b0->m_lastPos;
+    DVec2 Dp0 = p0 - p0_last;
+    Dp0.scale(bounce);
 
-  if (p0.y - b0->radius() < minPos.y) {
-    p0.y = minPos.y + b0->radius();
-    p0_last.y = p0.y + Dp0.y;
-  }
-  else if (p0.y + b0->radius() > maxPos.y) {
-    p0.y = maxPos.y - b0->radius();
-    p0_last.y = p0.y + Dp0.y;
-  }
-}
+    if (p0.x - b0->radius() < minPos.x) {
+      p0.x = minPos.x + b0->radius();
+      p0_last.x = p0.x + Dp0.x;
+    }
+    else if (p0.x + b0->radius() > maxPos.x) {
+      p0.x = maxPos.x - b0->radius();
+      p0_last.x = p0.x + Dp0.x;
+    }
 
-void AngleConstraint::solve()
-{
-  const DVec2& vPivot = pivot->m_pos;
-  DVec2 v0 = b0->m_pos - vPivot;
-  DVec2 v1 = b1->m_pos - vPivot;
-
-  double theta = atan2(v0.x * v1.y - v0.y * v1.x, v0.dot(v1) / (v0.mag() * v1.mag()));
-  double delta = (angle - theta) * stiffness;
-
-  if (b0->m_isKinematic) {
-    v1.rotate(delta);
-    b1->m_pos = v1 + vPivot;
-  }
-  else if (b1->m_isKinematic) {
-    v0.rotate(-delta);
-    b0->m_pos = v0 + vPivot;
-  }
-  else {
-    v0.rotate(-delta / 2.0);
-    v1.rotate(delta / 2.0);
-    b0->m_pos = v0 + vPivot;
-    b1->m_pos = v1 + vPivot;
+    if (p0.y - b0->radius() < minPos.y) {
+      p0.y = minPos.y + b0->radius();
+      p0_last.y = p0.y + Dp0.y;
+    }
+    else if (p0.y + b0->radius() > maxPos.y) {
+      p0.y = maxPos.y - b0->radius();
+      p0_last.y = p0.y + Dp0.y;
+    }
   }
 }

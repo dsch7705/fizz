@@ -2,7 +2,7 @@ set(SRC main.cpp
         dvec.cpp
         util.cpp
         solver.cpp
-        systems.cpp)
+        system.cpp)
 
 add_executable(fizz ${SRC})
 

@@ -4,7 +4,7 @@
 #include <thread>
 
 #include "constants.h"
-#include "systems.h"
+#include "system.h"
 
 int main(int argc, char** argv)
 {
@@ -27,61 +27,55 @@ int main(int argc, char** argv)
 
   const int nLinks{3};
   const double dist = (kMetersHeight / 2.0) / nLinks * .9;
+  Pendulum* p = System::createSystem<Pendulum>(nLinks, anchor, dist, false);
 
-  Pendulum p(nLinks, anchor, dist, false);
-  IKArm arm(anchor, nLinks, dist);
+  System* sys = System::createSystem();
 
-  System sys(true);
-  int id0 = sys.createBody({kMetersWidth / 2, kMetersHeight / 4}, 0.3, false);
-  int id1 = sys.createBody({kMetersWidth / 4, 0.0}, 0.3, false);
-  int id2 = sys.createBody({(kMetersWidth / 4) * 3, 0.0}, 0.3);
-  int id3 = sys.createBody({(kMetersWidth / 4) * 3, kMetersHeight / 3}, 0.5);
+  Body* b0 = sys->createBody({kMetersWidth / 2, kMetersHeight / 2}, 0.3, false);
+  Body* b1 = sys->createBody({kMetersWidth / 4, kMetersHeight / 4}, 0.3, false);
+  Body* b2 = sys->createBody({(kMetersWidth / 4) * 3, kMetersHeight / 4}, 0.3);
+  Body* b3 = sys->createBody({(kMetersWidth / 4) * 3, kMetersHeight / 3}, 0.5);
+  Body* b4 = sys->createBody({kMetersWidth / 2, 0}, 0.3, false);
 
-  sys.createConstraint<SpringConstraint>(id0, id1, -1.0, 300.0, 1.0);
-  sys.createConstraint<SpringConstraint>(id1, id2, -1.0, 500.0, 1.0);
-  sys.createConstraint<SpringConstraint>(id2, id0, -1.0, 300.0, 1.0);
-  sys.createConstraint<PositionConstraint>(id3, DVec2(0.0, 0.0), DVec2(kMetersWidth, kMetersHeight));
-  sys.createConstraint<PositionConstraint>(id2, DVec2(0.0, 0.0), DVec2(kMetersWidth, kMetersHeight));
-  sys.createConstraint<PositionConstraint>(id1, DVec2(0.0, 0.0), DVec2(kMetersWidth, kMetersHeight));
-  sys.createConstraint<PositionConstraint>(id0, DVec2(0.0, 0.0), DVec2(kMetersWidth, kMetersHeight));
+  double doohickyDamping = 0.3;
+  sys->createConstraint<SpringConstraint>(b0, b1, -1.0, 150.0, doohickyDamping);
+  sys->createConstraint<SpringConstraint>(b1, b2, -1.0, 250.0, doohickyDamping);
+  sys->createConstraint<SpringConstraint>(b2, b0, -1.0, 150.0, doohickyDamping);
+  sys->createConstraint<SpringConstraint>(b4, b1, -1.0, 150, doohickyDamping);
+  sys->createConstraint<SpringConstraint>(b4, b2, -1.0, 150, doohickyDamping);
+  sys->createConstraint<SpringConstraint>(b4, b0, -1.0, 250, doohickyDamping);
+
+  auto borderConstraint = sys->createConstraint<PositionConstraint>(DVec2(0.0), DVec2(kMetersWidth, kMetersHeight),
+                                                                    0.95, b0, b1, b2, b3, b4);
+  borderConstraint->addSystem(p);
 
   while (!WindowShouldClose()) {
     startTime = GetTime();
     if (IsKeyPressed(KEY_SPACE)) {
       DVec2 doohickyImpulse(std::rand() % 300 - 150, std::rand() % 400 - 200);
-      sys.getBody(id0)->addImpulse(doohickyImpulse / 2);
-      sys.getBody(id3)->addImpulse(doohickyImpulse / 4);
-      p.bodies().back().addImpulse(doohickyImpulse / 10);
+      b0->addImpulse(doohickyImpulse / 2);
+      b3->addImpulse(doohickyImpulse / 24);
+      p->tail()->addImpulse(doohickyImpulse / 32);
+    }
+    if (IsKeyPressed(KEY_G)) {
+      p->toggleGravity();
+      sys->toggleGravity();
     }
 
     DVec2 mousePos{static_cast<double>(GetMouseX()), static_cast<double>(GetMouseY())};
 
     while (accumulator >= kPhysicStep) {
-      p.update(1);
-      sys.update();
+      p->update();
+      sys->update();
 
       accumulator -= kPhysicStep;
     }
 
     BeginDrawing();
-
-    // DrawTexture(bg.texture, 0, 0, WHITE);
     ClearBackground(GRAY);
-    p.draw(bg);
-    sys.draw();
-    // p1.draw(bg);
-    // arm.draw();
 
-    // double potentialEnergy = p.calcPotentialEnergy();
-    // std::string potEnergyStr = "Potential energy: " + std::to_string(potentialEnergy);
-    // DrawText(potEnergyStr.c_str(), 10, 10, 16, BLACK);
-    //
-    // double kineticEnergy = p.calcKineticEnergy();
-    // std::string kinEnergyStr = "Kinetic energy: " + std::to_string(kineticEnergy);
-    // DrawText(kinEnergyStr.c_str(), 10, 25, 16, BLACK);
-    //
-    // std::string totalEnergyStr = "Total energy: " + std::to_string(potentialEnergy + kineticEnergy);
-    // DrawText(totalEnergyStr.c_str(), 10, 40, 16, BLACK);
+    p->draw();
+    sys->draw();
 
     EndDrawing();
 
