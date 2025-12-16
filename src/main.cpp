@@ -25,9 +25,10 @@ int main(int argc, char** argv)
   // Stuff
   DVec2 anchor{kMetersWidth / 2.0, kMetersHeight / 2.0};
 
-  const int nLinks{3};
+  const int nLinks{2};
   const double dist = (kMetersHeight / 2.0) / nLinks * .9;
   Pendulum* p = System::createSystem<Pendulum>(nLinks, anchor, dist, false);
+  p->tail()->mass = 10.0;
 
   System* sys = System::createSystem();
 
@@ -37,17 +38,38 @@ int main(int argc, char** argv)
   Body* b3 = sys->createBody({(kMetersWidth / 4) * 3, kMetersHeight / 3}, 0.5);
   Body* b4 = sys->createBody({kMetersWidth / 2, 0}, 0.3, false);
 
-  double doohickyDamping = 0.3;
-  sys->createConstraint<SpringConstraint>(b0, b1, -1.0, 150.0, doohickyDamping);
-  sys->createConstraint<SpringConstraint>(b1, b2, -1.0, 250.0, doohickyDamping);
-  sys->createConstraint<SpringConstraint>(b2, b0, -1.0, 150.0, doohickyDamping);
-  sys->createConstraint<SpringConstraint>(b4, b1, -1.0, 150, doohickyDamping);
-  sys->createConstraint<SpringConstraint>(b4, b2, -1.0, 150, doohickyDamping);
-  sys->createConstraint<SpringConstraint>(b4, b0, -1.0, 250, doohickyDamping);
+  // Varying mass
+  System* sys2 = System::createSystem();
+  sys2->setEffectedByGravity(true);
 
-  auto borderConstraint = sys->createConstraint<PositionConstraint>(DVec2(0.0), DVec2(kMetersWidth, kMetersHeight),
-                                                                    0.95, b0, b1, b2, b3, b4);
+  double k = 1500.0;
+  double d = -1.0;
+
+  Body* b5 = sys2->createBody({kMetersWidth / 3, 0}, 0.4, false, 100.0);
+  Body* b6 = sys2->createBody({kMetersWidth / 3, kMetersHeight / 2}, 0.4, false, 1.0);
+  sys2->createConstraint<SpringConstraint>(b5, b6, -1.0, k, d);
+
+  Body* b7 = sys2->createBody({(kMetersWidth / 3) * 2, 0}, 0.4, false, 1.0);
+  Body* b8 = sys2->createBody({(kMetersWidth / 3) * 2, kMetersHeight / 2}, 0.4, false, 10.0);
+  sys2->createConstraint<SpringConstraint>(b7, b8, -1.0, k, d);
+
+  // double doohickyDamping = 0.3;
+  // sys->createConstraint<SpringConstraint>(b0, b1, -1.0, 150.0, doohickyDamping);
+  // sys->createConstraint<SpringConstraint>(b1, b2, -1.0, 250.0, doohickyDamping);
+  // sys->createConstraint<SpringConstraint>(b2, b0, -1.0, 150.0, doohickyDamping);
+  // sys->createConstraint<SpringConstraint>(b4, b1, -1.0, 150, doohickyDamping);
+  // sys->createConstraint<SpringConstraint>(b4, b2, -1.0, 150, doohickyDamping);
+  // sys->createConstraint<SpringConstraint>(b4, b0, -1.0, 250, doohickyDamping);
+  // sys->createConstraint<DistanceConstraint>(b0, b1);
+  sys->createConstraint<SpringConstraint>(b1, b2, -1.0, 250);
+  sys->createConstraint<DistanceConstraint>(b2, b0);
+  sys->createConstraint<DistanceConstraint>(b4, b1);
+  sys->createConstraint<DistanceConstraint>(b4, b2);
+
+  auto borderConstraint = sys->createConstraint<PositionConstraint>(DVec2(0.0), DVec2(kMetersWidth, kMetersHeight), 0.8,
+                                                                    b0, b1, b2, b3, b4);
   borderConstraint->addSystem(p);
+  borderConstraint->addSystem(sys2);
 
   while (!WindowShouldClose()) {
     startTime = GetTime();
@@ -66,7 +88,8 @@ int main(int argc, char** argv)
 
     while (accumulator >= kPhysicStep) {
       p->update();
-      sys->update();
+      // sys->update();
+      // sys2->update();
 
       accumulator -= kPhysicStep;
     }
@@ -75,7 +98,8 @@ int main(int argc, char** argv)
     ClearBackground(GRAY);
 
     p->draw();
-    sys->draw();
+    // sys->draw();
+    // sys2->draw();
 
     EndDrawing();
 

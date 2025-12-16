@@ -10,4 +10,4 @@ constexpr double kGravity{50.0};
 
 constexpr unsigned int kTargetFPS{60};
 constexpr double kTargetFrametime{kTargetFPS ? 1.0 / static_cast<double>(kTargetFPS) : 0};
-constexpr double kPhysicStep{0.0001};
+constexpr double kPhysicStep{0.00001};

@@ -12,18 +12,18 @@ struct Color;
 class System;
 class Body {
  public:
-  Body(System* system, const DVec2& pos, double radius, bool isKinematic = false, double mass = 1.0);
+  Body(const DVec2& pos, double radius, bool isKinematic = false, double mass = 1.0);
 
   void setPos(const DVec2& pos);
   DVec2 pos() const { return m_pos; }
   DVec2 lastPos() const { return m_lastPos; }
   DVec2 velocity() const { return m_velocity; }
   DVec2 acceleration() const { return m_acceleration; }
-  int id() const { return m_id; }
+  const int id() const { return m_id; }
 
-  double radius() const { return m_radius; }
-  double mass() const { return m_mass; }
-  bool isKinematic() const { return m_isKinematic; }
+  double radius;
+  double mass;
+  bool isKinematic;
 
   void addImpulse(const DVec2& j);
   void addForce(DVec2 f);
@@ -33,16 +33,12 @@ class Body {
   void draw(Color c) const;
 
  private:
-  int m_id;
+  const int m_id;
 
   DVec2 m_pos;
   DVec2 m_lastPos;
   DVec2 m_velocity;
   DVec2 m_acceleration;
-
-  double m_radius;
-  double m_mass;
-  bool m_isKinematic;
 
   friend class DistanceConstraint;
   friend class SpringConstraint;
@@ -56,10 +52,10 @@ struct Constraint {
   virtual void solve() = 0;
   virtual void draw() {}
 
-  int id() const { return m_id; }
+  const int id() const { return m_id; }
 
  protected:
-  int m_id;
+  const int m_id;
 };
 struct PairConstraint : public Constraint {
   PairConstraint(Body* b0, Body* b1) : Constraint(), m_b0(b0), m_b1(b1) {}

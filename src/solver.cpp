@@ -9,21 +9,21 @@
 #include <cmath>
 #include <iostream>
 
-Body::Body(System* system, const DVec2& pos, double radius, bool isKinematic, double mass)
-    : m_pos(pos),
+Body::Body(const DVec2& pos, double radius, bool isKinematic, double mass)
+    : m_id(System::nextId()),
+      m_pos(pos),
       m_lastPos(pos),
       m_velocity({0.0, 0.0}),
       m_acceleration({0.0, 0.0}),
-      m_radius(radius),
-      m_mass(mass),
-      m_isKinematic(isKinematic)
+      radius(radius),
+      mass(mass),
+      isKinematic(isKinematic)
 {
-  m_id = System::nextId();
 }
 
 void Body::integrateVerlet()
 {
-  if (m_isKinematic) {
+  if (isKinematic) {
     m_lastPos = m_pos;
     m_velocity = {0, 0};
     return;
@@ -41,11 +41,11 @@ void Body::addForce(DVec2 f)
   // F = M * A
   // A = F / M
 
-  m_acceleration += f / m_mass;
+  m_acceleration += f / mass;
 }
 void Body::addImpulse(const DVec2& j)
 {
-  DVec2 dv = j / m_mass;
+  DVec2 dv = j / mass;
   m_lastPos -= dv * kPhysicStep;
 }
 void Body::accelerate(DVec2 a)
@@ -55,7 +55,7 @@ void Body::accelerate(DVec2 a)
 void Body::draw(Color c) const
 {
   DVec2 screenPos = worldToScreen(m_pos);
-  DrawCircle(screenPos.x, screenPos.y, m_radius * kPixelsPerMeter, c);
+  DrawCircle(screenPos.x, screenPos.y, radius * kPixelsPerMeter, c);
 }
 void Body::setPos(const DVec2& pos)
 {
@@ -63,10 +63,7 @@ void Body::setPos(const DVec2& pos)
   m_lastPos = pos;
 }
 
-Constraint::Constraint()
-{
-  m_id = System::nextId();
-}
+Constraint::Constraint() : m_id(System::nextId()) {}
 
 void RangeConstraint::addSystem(System* system)
 {
@@ -87,17 +84,21 @@ void DistanceConstraint::solve()
   double mag = diff.mag();
   diff.normalize();
 
-  double delta = mag - distance;
+  double w0 = 1.0 / m_b0->mass;
+  double w1 = 1.0 / m_b1->mass;
+  double wSum = w0 + w1;
 
-  if (m_b0->m_isKinematic) {
+  double delta = (mag - distance) / wSum;
+
+  if (m_b0->isKinematic) {
     v1 -= diff * delta;
   }
-  else if (m_b1->m_isKinematic) {
+  else if (m_b1->isKinematic) {
     v0 += diff * delta;
   }
   else {
-    v0 += diff * (delta / 2);
-    v1 -= diff * (delta / 2);
+    v0 += diff * (delta * w0);
+    v1 -= diff * (delta * w1);
   }
 }
 void DistanceConstraint::draw()
@@ -132,16 +133,16 @@ void SpringConstraint::solve()
 
   double c = damping;
   if (c < 0.0) {  // Apply critical damping if the damping factor is below zero
-    double m = (m_b0->mass() * m_b1->mass()) / (m_b0->mass() + m_b1->mass());
+    double m = (m_b0->mass * m_b1->mass) / (m_b0->mass + m_b1->mass);
     c = 2 * sqrt(k * m);
   }
   double Fd = -c * vrel.dot(n);
 
   double force = Fs + Fd;
-  if (m_b0->m_isKinematic) {
+  if (m_b0->isKinematic) {
     m_b1->addForce(diff * force);
   }
-  else if (m_b1->m_isKinematic) {
+  else if (m_b1->isKinematic) {
     m_b0->addForce(-diff * force);
   }
   else {
@@ -161,7 +162,7 @@ void SpringConstraint::draw()
   DVec2 perp = {-n.y, n.x};
 
   constexpr float coil_spacing = 15.f;
-  float half_w = std::min(m_b0->radius(), m_b1->radius()) * kPixelsPerMeter;
+  float half_w = std::min(m_b0->radius, m_b1->radius) * kPixelsPerMeter;
 
   int n_coils = (length * kPixelsPerMeter) / coil_spacing;
   for (int i = 0; i < n_coils; i++) {
@@ -188,21 +189,21 @@ void PositionConstraint::solve()
     DVec2 Dp0 = p0 - p0_last;
     Dp0.scale(bounce);
 
-    if (p0.x - b0->radius() < minPos.x) {
-      p0.x = minPos.x + b0->radius();
+    if (p0.x - b0->radius < minPos.x) {
+      p0.x = minPos.x + b0->radius;
       p0_last.x = p0.x + Dp0.x;
     }
-    else if (p0.x + b0->radius() > maxPos.x) {
-      p0.x = maxPos.x - b0->radius();
+    else if (p0.x + b0->radius > maxPos.x) {
+      p0.x = maxPos.x - b0->radius;
       p0_last.x = p0.x + Dp0.x;
     }
 
-    if (p0.y - b0->radius() < minPos.y) {
-      p0.y = minPos.y + b0->radius();
+    if (p0.y - b0->radius < minPos.y) {
+      p0.y = minPos.y + b0->radius;
       p0_last.y = p0.y + Dp0.y;
     }
-    else if (p0.y + b0->radius() > maxPos.y) {
-      p0.y = maxPos.y - b0->radius();
+    else if (p0.y + b0->radius > maxPos.y) {
+      p0.y = maxPos.y - b0->radius;
       p0_last.y = p0.y + Dp0.y;
     }
   }

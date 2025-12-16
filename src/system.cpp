@@ -49,7 +49,7 @@ double Pendulum::calcPotentialEnergy()
   double energy = 0.0;
   for (const auto& [_, body] : bodies()) {
     double h = kMetersHeight - body->pos().y;
-    energy += body->mass() * kGravity * h;
+    energy += body->mass * kGravity * h;
   }
 
   return energy;
@@ -60,7 +60,7 @@ double Pendulum::calcKineticEnergy()
   double energy = 0.0;
   for (const auto& [_, body] : bodies()) {
     double v = body->velocity().mag();
-    energy += 0.5 * body->mass() * v * v;
+    energy += 0.5 * body->mass * v * v;
   }
 
   return energy;
@@ -76,7 +76,7 @@ System* System::getSystem(int id)
 
 Body* System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
 {
-  auto body = std::make_unique<Body>(this, pos, radius, isKinematic);
+  auto body = std::make_unique<Body>(pos, radius, isKinematic, mass);
   Body* ptr = body.get();
   m_bodies.emplace(body->id(), std::move(body));
 
