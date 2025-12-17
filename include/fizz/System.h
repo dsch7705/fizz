@@ -10,26 +10,10 @@
 class Body;
 
 class System {
- private:
-  // inline static std::unordered_map<int, std::unique_ptr<System>> m_systems;
-
  public:
   System() : m_id(Util::nextId()) {}
 
   bool effectedByGravity{true};
-
-  //// Creates a System registered to be updated in the physics loop
-  // template <typename T = System, typename... Args>
-  //   requires std::derived_from<T, System>
-  // static T* createSystem(Args... args)
-  //{
-  //   auto system = std::make_unique<T>(args...);
-  //   T* ptr = system.get();
-  //   m_systems.emplace(system->m_id, std::move(system));
-  //
-  //  return ptr;
-  //}
-  // static System* getSystem(int id);
 
   Body* createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
   Body* getBody(int id);

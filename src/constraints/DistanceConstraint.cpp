@@ -6,8 +6,8 @@
 
 DistanceConstraint::DistanceConstraint(Body* b0, Body* b1, double distance) : PairConstraint(b0, b1), distance(distance)
 {
-  if (distance < 0.0) {
-    distance = (m_b1->pos() - m_b0->pos()).mag();
+  if (this->distance < 0.0) {
+    this->distance = (m_b1->pos() - m_b0->pos()).mag();
   }
 }
 

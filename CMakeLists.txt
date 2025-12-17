@@ -13,6 +13,5 @@ if(ASAN)
   add_link_options(-fsanitize=address)
 endif()
 
-add_subdirectory(lib/raylib)
 add_subdirectory(src)
 add_subdirectory(examples)

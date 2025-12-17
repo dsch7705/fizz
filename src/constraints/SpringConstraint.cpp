@@ -3,15 +3,14 @@
 #include "fizz/Body.h"
 #include "fizz/Constants.h"
 #include "fizz/Draw.h"
-#include "fizz/Util.h"
 
 #include <cmath>
 
 SpringConstraint::SpringConstraint(Body* b0, Body* b1, double length, double k, double damping)
     : PairConstraint(b0, b1), length(length), k(k), damping(damping)
 {
-  if (length < 0.0) {
-    length = (b1->pos() - b0->pos()).mag();
+  if (this->length < 0.0) {
+    this->length = (b1->pos() - b0->pos()).mag();
   }
 }
 
@@ -23,10 +22,8 @@ void SpringConstraint::solve()
   DVec2 p1 = m_b1->pos();
   DVec2 diff = p1 - p0;
   double mag = diff.mag();
-  if (mag == 0)
-    return;
-
-  DVec2 n = diff / mag;
+  if (mag != 0)
+    m_n = diff / mag;
 
   // Hooke's Law
   double x = mag - length;
@@ -41,18 +38,18 @@ void SpringConstraint::solve()
     double m = (m_b0->mass * m_b1->mass) / (m_b0->mass + m_b1->mass);
     c = 2 * sqrt(k * m);
   }
-  double Fd = -c * vrel.dot(n);
+  double Fd = -c * vrel.dot(m_n);
 
   double force = Fs + Fd;
   if (m_b0->isKinematic) {
-    m_b1->addForce(diff * force);
+    m_b1->addConstraintForce(diff * force);
   }
   else if (m_b1->isKinematic) {
-    m_b0->addForce(-diff * force);
+    m_b0->addConstraintForce(-diff * force);
   }
   else {
-    m_b0->addForce(-diff * (force / 2));
-    m_b1->addForce(diff * (force / 2));
+    m_b0->addConstraintForce(-diff * (force / 2));
+    m_b1->addConstraintForce(diff * (force / 2));
   }
 }
 
