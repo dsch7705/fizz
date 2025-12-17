@@ -24,9 +24,9 @@ Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool spring
     }
 
     if (springs)
-      createConstraint<SpringConstraint>(currentBody, lastBody, distance, 150.0, 1.0);
+      createConstraint<SpringConstraint>(currentBody, lastBody);
     else
-      createConstraint<DistanceConstraint>(currentBody, lastBody, distance);
+      createConstraint<DistanceConstraint>(currentBody, lastBody);
 
     lastBody = currentBody;
   }

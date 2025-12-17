@@ -8,3 +8,4 @@ FetchContent_MakeAvailable(raylib)
 
 add_subdirectory(pendulum)
 add_subdirectory(pogo)
+add_subdirectory(cloth)

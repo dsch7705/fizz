@@ -48,3 +48,8 @@ void System::update(double dT)
     dT -= kPhysicStep;
   }
 }
+
+void System::removeConstraint(int id)
+{
+  m_constraints.erase(id);
+}

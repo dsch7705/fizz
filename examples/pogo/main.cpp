@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   System system;
   Body* b0 = system.createBody({kMetersWidth / 2, 0.5}, 0.5, false, 1.0);
   Body* b1 = system.createBody({kMetersWidth / 2, kMetersHeight / 2}, 0.5, false, 1.0);
-  system.createConstraint<SpringConstraint>(b0, b1, -1.0, 150.0, 1.0);
+  system.createConstraint<SpringConstraint>(b0, b1);
   system.createConstraint<PositionConstraint>(DVec2(0.0, -100.0), DVec2(kMetersWidth, kMetersHeight), 0.6, b0, b1);
 
   InitWindow(kScreenWidth, kScreenHeight, "Pogo");
@@ -26,7 +26,10 @@ int main(int argc, char** argv)
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
+
     system.draw();
+    DrawText("Use space to pogo", 15, 15, 30, BLACK);
+
     EndDrawing();
   }
 }

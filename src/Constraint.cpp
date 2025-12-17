@@ -4,7 +4,10 @@
 
 #include <cassert>
 
-Constraint::Constraint() : m_id(Util::nextId()) {}
+PairConstraint::PairConstraint(Body* b0, Body* b1) : Constraint(), m_b0(b0), m_b1(b1)
+{
+  m_n = DVec2::normalize(b1->pos() - b0->pos());
+}
 
 void RangeConstraint::addSystem(System* system)
 {

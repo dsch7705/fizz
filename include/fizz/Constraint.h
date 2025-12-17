@@ -1,5 +1,8 @@
 #pragma once
 
+#include "DVec.h"
+#include "Util.h"
+
 #include <cassert>
 #include <concepts>
 #include <set>
@@ -8,7 +11,7 @@ class Body;
 class System;
 
 struct Constraint {
-  Constraint();
+  Constraint() : m_id(Util::nextId()) {}
   virtual ~Constraint() {}
   virtual void solve() = 0;
   virtual void draw() {}
@@ -20,11 +23,16 @@ struct Constraint {
 };
 
 struct PairConstraint : public Constraint {
-  PairConstraint(Body* b0, Body* b1) : Constraint(), m_b0(b0), m_b1(b1) {}
+  PairConstraint(Body* b0, Body* b1);
+  Body* b0() const { return m_b0; }
+  Body* b1() const { return m_b1; }
 
  protected:
   Body* m_b0;
   Body* m_b1;
+
+  // Normalized direction vector from b0 -> b1
+  DVec2 m_n;
 };
 
 struct RangeConstraint : public Constraint {

@@ -2,22 +2,19 @@
 
 #include "fizz/Body.h"
 #include "fizz/Draw.h"
-#include "fizz/Util.h"
 
-DistanceConstraint::DistanceConstraint(Body* b0, Body* b1, double distance) : PairConstraint(b0, b1), distance(distance)
+DistanceConstraint::DistanceConstraint(Body* b0, Body* b1) : PairConstraint(b0, b1)
 {
-  if (this->distance < 0.0) {
-    this->distance = (m_b1->pos() - m_b0->pos()).mag();
-  }
+  distance = (m_b1->pos() - m_b0->pos()).mag();
 }
 
 void DistanceConstraint::solve()
 {
   assert(m_b0 != nullptr && m_b1 != nullptr);
 
-  DVec2& v0 = m_b0->m_pos;
-  DVec2& v1 = m_b1->m_pos;
-  DVec2 diff = v1 - v0;
+  DVec2& p0 = m_b0->m_pos;
+  DVec2& p1 = m_b1->m_pos;
+  DVec2 diff = p1 - p0;
   double mag = diff.mag();
   diff.normalize();
 
@@ -28,14 +25,14 @@ void DistanceConstraint::solve()
   double delta = (mag - distance) / wSum;
 
   if (m_b0->isKinematic) {
-    v1 -= diff * delta;
+    p1 -= diff * delta;
   }
   else if (m_b1->isKinematic) {
-    v0 += diff * delta;
+    p0 += diff * delta;
   }
   else {
-    v0 += diff * (delta * w0);
-    v1 -= diff * (delta * w1);
+    p0 += diff * (delta * w0);
+    p1 -= diff * (delta * w1);
   }
 }
 

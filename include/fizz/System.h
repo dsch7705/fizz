@@ -28,6 +28,7 @@ class System {
 
     return ptr;
   }
+  void removeConstraint(int id);
 
   virtual void draw() const;
   void update(double dT);
