@@ -1,9 +1,10 @@
-#include "fizz/core/Constraint.h"
-#include "fizz/core/System.h"
+#include "fizz/Constraint.h"
+#include "fizz/System.h"
+#include "fizz/Util.h"
 
 #include <cassert>
 
-Constraint::Constraint() : m_id(System::nextId()) {}
+Constraint::Constraint() : m_id(Util::nextId()) {}
 
 void RangeConstraint::addSystem(System* system)
 {

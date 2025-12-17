@@ -23,7 +23,7 @@ class Body {
   void accelerate(DVec2 a);
   void integrateVerlet();
 
-  void draw() const;
+  virtual void draw() const;
 
  private:
   const int m_id;

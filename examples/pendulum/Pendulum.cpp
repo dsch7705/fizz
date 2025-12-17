@@ -1,10 +1,10 @@
-#include "fizz/systems/Pendulum.h"
+#include "Pendulum.h"
 
-#include "fizz/core/Constants.h"
-#include "fizz/core/System.h"
+#include "fizz/Constants.h"
+#include "fizz/System.h"
 
-#include "fizz/constraint/DistanceConstraint.h"
-#include "fizz/constraint/SpringConstraint.h"
+#include "fizz/constraints/DistanceConstraint.h"
+#include "fizz/constraints/SpringConstraint.h"
 
 #include <cmath>
 

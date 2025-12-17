@@ -1,10 +1,9 @@
-#include "fizz/constraint/SpringConstraint.h"
+#include "fizz/constraints/SpringConstraint.h"
 
-#include "fizz/core/Body.h"
-#include "fizz/core/Constants.h"
-#include "fizz/core/Util.h"
-
-#include "raylib.h"
+#include "fizz/Body.h"
+#include "fizz/Constants.h"
+#include "fizz/Draw.h"
+#include "fizz/Util.h"
 
 #include <cmath>
 
@@ -69,19 +68,14 @@ void SpringConstraint::draw()
   DVec2 perp = {-n.y, n.x};
 
   constexpr float coil_spacing = 15.f;
-  float half_w = std::min(m_b0->radius, m_b1->radius) * kPixelsPerMeter;
+  float half_w = std::min(m_b0->radius, m_b1->radius);
 
   int n_coils = (length * kPixelsPerMeter) / coil_spacing;
   for (int i = 0; i < n_coils; i++) {
     double t = (mag / n_coils) * i;
-    DVec2 line_center = Util::worldToScreen(p0 + n * t);
+    DVec2 line_center = p0 + n * t;
     DVec2 line_p0 = line_center + perp * half_w;
     DVec2 line_p1 = line_center - perp * half_w;
-    DrawLine(line_p0.x, line_p0.y, line_p1.x, line_p1.y, BLACK);
+    Draw::line(line_p0, line_p1, {0, 0, 0, 255});
   }
-
-  DVec2 screen_p0 = Util::worldToScreen(p0);
-  DVec2 screen_p1 = Util::worldToScreen(p1);
-  DrawCircle(screen_p0.x, screen_p0.y, half_w / 2, BLACK);
-  DrawCircle(screen_p1.x, screen_p1.y, half_w / 2, BLACK);
 }

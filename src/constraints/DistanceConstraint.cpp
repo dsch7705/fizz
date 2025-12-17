@@ -1,9 +1,8 @@
-#include "fizz/constraint/DistanceConstraint.h"
+#include "fizz/constraints/DistanceConstraint.h"
 
-#include "fizz/core/Body.h"
-#include "fizz/core/Util.h"
-
-#include "raylib.h"
+#include "fizz/Body.h"
+#include "fizz/Draw.h"
+#include "fizz/Util.h"
 
 DistanceConstraint::DistanceConstraint(Body* b0, Body* b1, double distance) : PairConstraint(b0, b1), distance(distance)
 {
@@ -43,8 +42,5 @@ void DistanceConstraint::solve()
 void DistanceConstraint::draw()
 {
   assert(m_b0 != nullptr && m_b1 != nullptr);
-
-  DVec2 p0 = Util::worldToScreen(m_b0->m_pos);
-  DVec2 p1 = Util::worldToScreen(m_b1->m_pos);
-  DrawLine(p0.x, p0.y, p1.x, p1.y, BLACK);
+  Draw::line(m_b0->pos(), m_b1->pos(), {0, 0, 0, 255});
 }

@@ -1,4 +1,4 @@
-#include "fizz/core/DVec.h"
+#include "fizz/DVec.h"
 
 #include <cmath>
 

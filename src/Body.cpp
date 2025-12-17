@@ -1,12 +1,11 @@
-#include "fizz/core/Body.h"
-#include "fizz/core/Constants.h"
-#include "fizz/core/System.h"
-#include "fizz/core/Util.h"
-
-#include "raylib.h"
+#include "fizz/Body.h"
+#include "fizz/Constants.h"
+#include "fizz/Draw.h"
+#include "fizz/System.h"
+#include "fizz/Util.h"
 
 Body::Body(const DVec2& pos, double radius, bool isKinematic, double mass)
-    : m_id(System::nextId()),
+    : m_id(Util::nextId()),
       m_pos(pos),
       m_lastPos(pos),
       m_velocity({0.0, 0.0}),
@@ -51,8 +50,7 @@ void Body::accelerate(DVec2 a)
 }
 void Body::draw() const
 {
-  DVec2 screenPos = Util::worldToScreen(m_pos);
-  DrawCircle(screenPos.x, screenPos.y, radius * kPixelsPerMeter, RED);
+  Draw::circle(m_pos, radius, {0, 0, 0, 255});
 }
 void Body::setPos(const DVec2& pos)
 {

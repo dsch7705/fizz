@@ -1,15 +1,7 @@
-#include "fizz/core/System.h"
-#include "fizz/core/Constants.h"
+#include "fizz/System.h"
+#include "fizz/Constants.h"
 
 #include <cassert>
-
-System* System::getSystem(int id)
-{
-  if (!m_systems.contains(id))
-    return nullptr;
-
-  return m_systems.at(id).get();
-}
 
 Body* System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
 {
@@ -39,16 +31,20 @@ void System::draw() const
   }
 }
 
-void System::update()
+void System::update(double dT)
 {
-  for (auto& [_, constraint] : m_constraints) {
-    constraint->solve();
-  }
+  while (dT >= kPhysicStep) {
+    for (auto& [_, constraint] : m_constraints) {
+      constraint->solve();
+    }
 
-  for (auto& [_, body] : m_bodies) {
-    if (m_effectedByGravity)
-      body->accelerate(DVec2(0.0, kGravity));
+    for (auto& [_, body] : m_bodies) {
+      if (effectedByGravity)
+        body->accelerate(DVec2(0.0, kGravity));
 
-    body->integrateVerlet();
+      body->integrateVerlet();
+    }
+
+    dT -= kPhysicStep;
   }
 }

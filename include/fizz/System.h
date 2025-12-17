@@ -2,6 +2,7 @@
 
 #include "Body.h"
 #include "Constraint.h"
+#include "Util.h"
 
 #include <memory>
 #include <unordered_map>
@@ -10,22 +11,25 @@ class Body;
 
 class System {
  private:
-  inline static std::unordered_map<int, std::unique_ptr<System>> m_systems;
+  // inline static std::unordered_map<int, std::unique_ptr<System>> m_systems;
 
  public:
-  System() : m_id(nextId()) {}
+  System() : m_id(Util::nextId()) {}
 
-  template <typename T = System, typename... Args>
-    requires std::derived_from<T, System>
-  static T* createSystem(Args... args)
-  {
-    auto system = std::make_unique<T>(args...);
-    T* ptr = system.get();
-    m_systems.emplace(system->m_id, std::move(system));
+  bool effectedByGravity{true};
 
-    return ptr;
-  }
-  static System* getSystem(int id);
+  //// Creates a System registered to be updated in the physics loop
+  // template <typename T = System, typename... Args>
+  //   requires std::derived_from<T, System>
+  // static T* createSystem(Args... args)
+  //{
+  //   auto system = std::make_unique<T>(args...);
+  //   T* ptr = system.get();
+  //   m_systems.emplace(system->m_id, std::move(system));
+  //
+  //  return ptr;
+  //}
+  // static System* getSystem(int id);
 
   Body* createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
   Body* getBody(int id);
@@ -42,26 +46,15 @@ class System {
   }
 
   virtual void draw() const;
-  virtual void update();
+  void update(double dT);
 
   const std::unordered_map<int, std::unique_ptr<Body>>& bodies() const { return m_bodies; }
   const std::unordered_map<int, std::unique_ptr<Constraint>>& constraints() const { return m_constraints; }
 
-  void setEffectedByGravity(bool effected) { m_effectedByGravity = effected; }
-  void toggleGravity() { m_effectedByGravity = !m_effectedByGravity; }
-  bool effectedByGravity() const { return m_effectedByGravity; }
-
   const int id() const { return m_id; }
-
-  static int nextId()
-  {
-    static int nextId = 0;
-    return nextId++;
-  }
 
  protected:
   const int m_id;
-  bool m_effectedByGravity{true};
 
  private:
   std::unordered_map<int, std::unique_ptr<Body>> m_bodies;

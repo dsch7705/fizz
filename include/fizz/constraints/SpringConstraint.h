@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/Constraint.h"
+#include "../Constraint.h"
 
 struct SpringConstraint : public PairConstraint {
   SpringConstraint(Body* b0, Body* b1, double length = -1.0, double k = 15.0, double damping = 1.0);

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../core/Constraint.h"
-#include "../core/DVec.h"
+#include "../Constraint.h"
+#include "../DVec.h"
 
 struct PositionConstraint : public RangeConstraint {
   template <typename... Bs>

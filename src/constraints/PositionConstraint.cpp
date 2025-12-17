@@ -1,6 +1,6 @@
-#include "fizz/constraint/PositionConstraint.h"
+#include "fizz/constraints/PositionConstraint.h"
 
-#include "fizz/core/Body.h"
+#include "fizz/Body.h"
 
 void PositionConstraint::solve()
 {

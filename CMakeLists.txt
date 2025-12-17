@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(gravity-sim)
+project(fizz)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,7 +15,4 @@ endif()
 
 add_subdirectory(lib/raylib)
 add_subdirectory(src)
-
-add_executable(fizz main.cpp)
-target_include_directories(fizz PRIVATE include)
-target_link_libraries(fizz PRIVATE Fizz::Core Fizz::Constraint Fizz::Systems raylib)
+add_subdirectory(examples)

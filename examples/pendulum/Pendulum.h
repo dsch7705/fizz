@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/System.h"
+#include "fizz/System.h"
 
 class Pendulum : public System {
  public:
