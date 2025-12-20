@@ -1,7 +1,6 @@
 #include "fizz/Constants.h"
 #include "fizz/Draw.h"
 #include "fizz/System.h"
-#include "fizz/constraints/DistanceConstraint.h"
 #include "fizz/constraints/SpringConstraint.h"
 
 #include "../raylib_Draw.h"
@@ -22,18 +21,14 @@ bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
   return (o1 * o2 < 0.0) && (o3 * o4 < 0.0);
 }
 
-int main(int argc, char** argv)
+void grid(System& system)
 {
-  Draw::setCircleFunc(raylib_circle);
-  Draw::setLineFunc(raylib_line);
-
-  System system;
   double offset = 1.0;
   double size = 0.3;
-  int w = 20;
-  int h = 20;
+  int w = 40;
+  int h = 25;
 
-  double k = 30000.0;
+  double k = 100000.0;
   double damping = -1.0;
 
   std::vector<Body*> row, lastRow;
@@ -56,6 +51,15 @@ int main(int argc, char** argv)
     lastRow = std::move(row);
     lastBody = lastB;
   }
+}
+
+int main(int argc, char** argv)
+{
+  Draw::setCircleFunc(raylib_circle);
+  Draw::setLineFunc(raylib_line);
+
+  System system;
+  grid(system);
 
   InitWindow(kScreenWidth, kScreenHeight, "Cloth");
   SetTargetFPS(60);
@@ -81,6 +85,11 @@ int main(int argc, char** argv)
         system.removeConstraint(c->id());
       }
       toDelete.clear();
+    }
+
+    if (IsKeyPressed(KEY_R)) {
+      system.clear();
+      grid(system);
     }
 
     system.update(GetFrameTime());

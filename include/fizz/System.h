@@ -32,6 +32,7 @@ class System {
 
   virtual void draw() const;
   void update(double dT);
+  void clear();
 
   const std::unordered_map<int, std::unique_ptr<Body>>& bodies() const { return m_bodies; }
   const std::unordered_map<int, std::unique_ptr<Constraint>>& constraints() const { return m_constraints; }

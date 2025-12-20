@@ -38,9 +38,9 @@ class Body {
   DVec2 m_velocity;
 
   // Forces to be applied this frame; cleared each frame
-  DVec2 m_forces;
+  DVec2 m_forces{DVec2(0.0)};
   // Constraint forces to be applied this physics substep; cleared each substep
-  DVec2 m_constraintForces;
+  DVec2 m_constraintForces{DVec2(0.0)};
 
   friend class DistanceConstraint;
   friend class SpringConstraint;

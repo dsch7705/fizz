@@ -49,6 +49,12 @@ void System::update(double dT)
   }
 }
 
+void System::clear()
+{
+  m_bodies.clear();
+  m_constraints.clear();
+}
+
 void System::removeConstraint(int id)
 {
   m_constraints.erase(id);
