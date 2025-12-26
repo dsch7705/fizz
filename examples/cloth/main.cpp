@@ -24,9 +24,9 @@ bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 void grid(System& system)
 {
   double offset = 1.0;
-  double size = 0.3;
-  int w = 40;
-  int h = 25;
+  double size = 0.15;
+  int w = 80;
+  int h = 40;
 
   double k = 100000.0;
   double damping = -1.0;

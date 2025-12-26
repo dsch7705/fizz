@@ -15,8 +15,10 @@ endif()
 
 add_subdirectory(src)
 
-option(BUILD_EXAMPLES ON)
+if(NOT DEFINED BUILD_FIZZ_EXAMPLES)
+  set(BUILD_FIZZ_EXAMPLES ON)
+endif()
 
-if(BUILD_EXAMPLES)
+if(BUILD_FIZZ_EXAMPLES)
   add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
+endif()
