@@ -46,7 +46,12 @@ struct RangeConstraint : public Constraint {
     requires(std::same_as<Bs, Body*> && ...)
   void addBody(Bs... bodies)
   {
-    (assert(bodies != nullptr), ...);
+    auto check = [](auto* b) {
+      if (!b)
+        throw std::invalid_argument("Body cannot be null");
+    };
+    (check(bodies), ...);
+
     (m_bodies.insert(bodies), ...);
   }
 

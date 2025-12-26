@@ -14,4 +14,9 @@ if(ASAN)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(examples)
+
+option(BUILD_EXAMPLES ON)
+
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif(BUILD_EXAMPLES)
