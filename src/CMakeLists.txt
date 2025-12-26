@@ -11,4 +11,4 @@ set(FIZZ_SRC
   constraints/PositionConstraint.cpp)
 
 add_library(fizz ${FIZZ_SRC})
-target_include_directories(fizz PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(fizz PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
