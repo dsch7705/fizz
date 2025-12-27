@@ -1,6 +1,7 @@
 #include "fizz/Constants.h"
 #include "fizz/Draw.h"
 #include "fizz/System.h"
+#include "fizz/constraints/DistanceConstraint.h"
 #include "fizz/constraints/SpringConstraint.h"
 
 #include "../raylib_Draw.h"
@@ -23,20 +24,24 @@ bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 
 void grid(System& system)
 {
-  double offset = 1.0;
-  double size = 0.15;
-  int w = 80;
-  int h = 40;
+  constexpr double size = 0.2;
+  constexpr int w = 71;
+  constexpr int h = 35;
+  constexpr DVec2 offset(kMetersWidth / 2.0 - (w * size) / 2.0, 1.0);
 
-  double k = 100000.0;
-  double damping = -1.0;
+  constexpr double k = 500000.0;
+  constexpr double damping = -1.0;
+
+  constexpr int anchorW = 5;
 
   std::vector<Body*> row, lastRow;
   Body* lastBody = nullptr;
   for (int i_y = 0; i_y < h; i_y++) {
     Body* lastB = nullptr;
     for (int i_x = 0; i_x < w; i_x++) {
-      Body* b = system.createBody(DVec2(offset + i_x * size, offset + i_y * size), 0.025, (i_y == 0));
+      bool isAnchor = !(i_x % 7) && (i_y == 0);
+
+      Body* b = system.createBody(DVec2(offset.x + i_x * size, offset.y + i_y * size), 0.025, isAnchor);
       row.push_back(b);
       if (i_x < lastRow.size()) {
         system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
@@ -96,8 +101,10 @@ int main(int argc, char** argv)
 
     BeginDrawing();
 
-    ClearBackground(RAYWHITE);
-    system.draw();
+    ClearBackground(BLACK);
+    system.draw(Draw::Color{255, 255, 255, 255});
+
+    DrawText(std::to_string(GetFPS()).c_str(), 5, 5, 30, GREEN);
 
     EndDrawing();
 

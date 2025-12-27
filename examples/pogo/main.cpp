@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    system.draw();
+    system.draw(Draw::Color{0, 0, 0, 255});
     DrawText("Use space to pogo", 15, 15, 30, BLACK);
 
     EndDrawing();

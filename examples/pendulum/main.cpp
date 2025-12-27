@@ -22,7 +22,7 @@ int main(int argc, char** argv)
 
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    p.draw();
+    p.draw(Draw::Color{0, 0, 0, 255});
     EndDrawing();
   }
 }

@@ -12,5 +12,5 @@ struct SpringConstraint : public PairConstraint {
   inline static const double minDistance{1.0};
 
   void solve() override;
-  void draw() override;
+  void draw(Draw::Color color) const override;
 };

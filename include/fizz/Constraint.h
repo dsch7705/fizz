@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DVec.h"
+#include "Draw.h"
 #include "Util.h"
 
 #include <cassert>
@@ -14,7 +15,7 @@ struct Constraint {
   Constraint() : m_id(Util::nextId()) {}
   virtual ~Constraint() {}
   virtual void solve() = 0;
-  virtual void draw() {}
+  virtual void draw(Draw::Color color) const {}
 
   const int id() const { return m_id; }
 

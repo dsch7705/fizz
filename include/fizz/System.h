@@ -2,6 +2,7 @@
 
 #include "Body.h"
 #include "Constraint.h"
+#include "Draw.h"
 #include "Util.h"
 
 #include <memory>
@@ -30,7 +31,7 @@ class System {
   }
   void removeConstraint(int id);
 
-  virtual void draw() const;
+  virtual void draw(Draw::Color color) const;
   void update(double dT);
   void clear();
 

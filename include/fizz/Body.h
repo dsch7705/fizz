@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DVec.h"
+#include "Draw.h"
 
 class System;
 class Body {
@@ -28,7 +29,7 @@ class Body {
   // last should evaluate to true on the final solver iteration
   void integrateVerlet(bool last);
 
-  virtual void draw() const;
+  virtual void draw(Draw::Color color) const;
 
  private:
   const int m_id;

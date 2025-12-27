@@ -8,5 +8,5 @@ struct DistanceConstraint : public PairConstraint {
   double distance;
 
   void solve() override;
-  void draw() override;
+  void draw(Draw::Color color) const override;
 };

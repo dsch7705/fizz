@@ -50,9 +50,9 @@ void Body::addImpulse(const DVec2& j)
   m_lastPos -= dv * kPhysicStep;
 }
 
-void Body::draw() const
+void Body::draw(Draw::Color color) const
 {
-  Draw::circle(m_pos, radius, {0, 0, 0, 255});
+  Draw::circle(m_pos, radius, color);
 }
 
 void Body::setPos(const DVec2& pos)

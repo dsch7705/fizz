@@ -54,13 +54,13 @@ void SpringConstraint::solve()
   }
 }
 
-void SpringConstraint::draw()
+void SpringConstraint::draw(Draw::Color color) const
 {
   assert(m_b0 != nullptr && m_b1 != nullptr);
 
   DVec2 p0 = m_b0->pos();
   DVec2 p1 = m_b1->pos();
-  Draw::line(p0, p1, {0, 0, 0, 255});
+  Draw::line(p0, p1, color);
   // DVec2 n = p1 - p0;
   // double mag = n.mag();
   // n.normalize();

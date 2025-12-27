@@ -20,14 +20,14 @@ Body* System::getBody(int id)
   return m_bodies.at(id).get();
 }
 
-void System::draw() const
+void System::draw(Draw::Color color) const
 {
   for (auto& [_, constraint] : m_constraints) {
-    constraint->draw();
+    constraint->draw(color);
   }
 
   for (const auto& [_, body] : m_bodies) {
-    body->draw();
+    body->draw(color);
   }
 }
 
