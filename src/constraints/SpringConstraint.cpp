@@ -65,15 +65,20 @@ void SpringConstraint::draw(Draw::Color color) const
   n.normalize();
   DVec2 perp = {-n.y, n.x};
 
-  constexpr float coil_spacing = 15.f;
+  constexpr float coil_spacing = 5.f;
   float half_w = std::min(m_b0->radius, m_b1->radius);
 
   int n_coils = (length * kPixelsPerMeter) / coil_spacing;
+  DVec2 last_p0;
   for (int i = 0; i < n_coils; i++) {
     double t = (mag / n_coils) * i;
     DVec2 line_center = p0 + n * t;
     DVec2 line_p0 = line_center + perp * half_w;
     DVec2 line_p1 = line_center - perp * half_w;
     Draw::line(line_p0, line_p1, color);
+    if (i != 0)
+      Draw::line(last_p0, line_p1, color);
+
+    last_p0 = line_p0;
   }
 }
