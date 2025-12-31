@@ -60,21 +60,20 @@ void SpringConstraint::draw(Draw::Color color) const
 
   DVec2 p0 = m_b0->pos();
   DVec2 p1 = m_b1->pos();
-  Draw::line(p0, p1, color);
-  // DVec2 n = p1 - p0;
-  // double mag = n.mag();
-  // n.normalize();
-  // DVec2 perp = {-n.y, n.x};
-  //
-  // constexpr float coil_spacing = 15.f;
-  // float half_w = std::min(m_b0->radius, m_b1->radius);
-  //
-  // int n_coils = (length * kPixelsPerMeter) / coil_spacing;
-  // for (int i = 0; i < n_coils; i++) {
-  //  double t = (mag / n_coils) * i;
-  //  DVec2 line_center = p0 + n * t;
-  //  DVec2 line_p0 = line_center + perp * half_w;
-  //  DVec2 line_p1 = line_center - perp * half_w;
-  //  Draw::line(line_p0, line_p1, {0, 0, 0, 255});
-  //}
+  DVec2 n = p1 - p0;
+  double mag = n.mag();
+  n.normalize();
+  DVec2 perp = {-n.y, n.x};
+
+  constexpr float coil_spacing = 15.f;
+  float half_w = std::min(m_b0->radius, m_b1->radius);
+
+  int n_coils = (length * kPixelsPerMeter) / coil_spacing;
+  for (int i = 0; i < n_coils; i++) {
+    double t = (mag / n_coils) * i;
+    DVec2 line_center = p0 + n * t;
+    DVec2 line_p0 = line_center + perp * half_w;
+    DVec2 line_p1 = line_center - perp * half_w;
+    Draw::line(line_p0, line_p1, color);
+  }
 }
