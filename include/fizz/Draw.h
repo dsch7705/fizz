@@ -14,8 +14,8 @@ struct Color {
   uint8_t a;
 };
 
-typedef std::function<void(const DVec2& center, float radius, Color color)> CircleFunc;
-typedef std::function<void(const DVec2& p0, const DVec2& p1, Color color)> LineFunc;
+using CircleFunc = std::function<void(const DVec2& center, float radius, Color color)>;
+using LineFunc = std::function<void(const DVec2& p0, const DVec2& p1, Color color)>;
 
 void setCircleFunc(CircleFunc func);
 void setLineFunc(LineFunc func);
