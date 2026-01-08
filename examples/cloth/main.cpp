@@ -7,6 +7,7 @@
 #include "../raylib_Draw.h"
 
 #include <vector>
+#include <string>
 
 bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 {
