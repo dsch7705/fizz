@@ -33,25 +33,3 @@ Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool spring
 
   m_tail = lastBody;
 }
-
-double Pendulum::calcPotentialEnergy()
-{
-  double energy = 0.0;
-  for (const auto& [_, body] : bodies()) {
-    double h = kMetersHeight - body->pos().y;
-    energy += body->mass * kGravity * h;
-  }
-
-  return energy;
-}
-
-double Pendulum::calcKineticEnergy()
-{
-  double energy = 0.0;
-  for (const auto& [_, body] : bodies()) {
-    double v = body->velocity().mag();
-    energy += 0.5 * body->mass * v * v;
-  }
-
-  return energy;
-}

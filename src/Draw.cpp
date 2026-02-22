@@ -2,24 +2,42 @@
 #include "fizz/Constants.h"
 #include "fizz/Util.h"
 
-Draw::CircleFunc drawCircleFunc;
-void Draw::setCircleFunc(CircleFunc func)
-{
-  drawCircleFunc = func;
-}
+namespace Draw {
 
-Draw::LineFunc drawLineFunc;
-void Draw::setLineFunc(LineFunc func)
-{
-  drawLineFunc = func;
-}
+  Transform transform;
+  Transform& getTransform()
+  {
+    return transform;
+  }
 
-void Draw::circle(const DVec2& center, float radius, Color color)
-{
-  drawCircleFunc(Util::worldToScreen(center), radius * kPixelsPerMeter, color);
-}
+  DVec2 worldToScreen(const DVec2& pos)
+  {
+    return (pos + transform.offset) * transform.scale;
+  }
+  DVec2 screenToWorld(const DVec2& pos)
+  {
+    return pos / transform.scale - transform.offset;
+  }
 
-void Draw::line(const DVec2& p0, const DVec2& p1, Color color)
-{
-  drawLineFunc(Util::worldToScreen(p0), Util::worldToScreen(p1), color);
+  CircleFunc drawCircleFunc;
+  void setCircleFunc(CircleFunc func)
+  {
+    drawCircleFunc = func;
+  }
+  
+  LineFunc drawLineFunc;
+  void setLineFunc(LineFunc func)
+  {
+    drawLineFunc = func;
+  }
+  
+  void circle(const DVec2& center, float radius, Color color)
+  {
+    drawCircleFunc(worldToScreen(center), radius * transform.scale, color);
+  }
+  
+  void line(const DVec2& p0, const DVec2& p1, Color color)
+  {
+    drawLineFunc(worldToScreen(p0), worldToScreen(p1), color);
+  }
 }

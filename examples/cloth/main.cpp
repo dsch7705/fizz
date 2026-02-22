@@ -25,12 +25,12 @@ bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 
 void grid(System& system)
 {
-  constexpr double size = 0.2;
-  constexpr int w = 71;
-  constexpr int h = 35;
-  constexpr DVec2 offset(kMetersWidth / 2.0 - (w * size) / 2.0, 1.0);
+  constexpr double size = 0.4;
+  constexpr int w = 29;
+  constexpr int h = 15;
+  const DVec2 offset(w * size / 2, h * size * 0.8);
 
-  constexpr double k = 500000.0;
+  constexpr double k = 50000.0;
   constexpr double damping = -1.0;
 
   constexpr int anchorW = 5;
@@ -42,7 +42,7 @@ void grid(System& system)
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      Body* b = system.createBody(DVec2(offset.x + i_x * size, offset.y + i_y * size), 0.025, isAnchor);
+      Body* b = system.createBody(DVec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
       row.push_back(b);
       if (i_x < lastRow.size()) {
         system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
@@ -64,17 +64,24 @@ int main(int argc, char** argv)
   Draw::setCircleFunc(raylib_circle);
   Draw::setLineFunc(raylib_line);
 
+  constexpr int screenW = 640;
+  constexpr int screenH = 480;
+
+  Draw::Transform& transform = Draw::getTransform();
+  transform.scale = 50;
+  transform.offset = DVec2(screenW, screenH) / transform.scale / 2;
+
   System system;
   grid(system);
 
-  InitWindow(kScreenWidth, kScreenHeight, "Cloth");
+  InitWindow(screenW, screenH, "Cloth");
   SetTargetFPS(60);
 
   DVec2 lastMouse;
   std::vector<Constraint*> toDelete;
   while (!WindowShouldClose()) {
     DVec2 mouse(GetMouseX(), GetMouseY());
-    mouse = Util::screenToWorld(mouse);
+    mouse = Draw::screenToWorld(mouse);
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
       for (auto& [id, constraint] : system.constraints()) {

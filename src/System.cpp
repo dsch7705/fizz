@@ -40,7 +40,7 @@ void System::update(double dT)
 
     for (auto& [_, body] : m_bodies) {
       if (effectedByGravity)
-        body->addConstraintForce(DVec2(0.0, kGravity * body->mass));
+        body->addConstraintForce(DVec2(0.0, gravity * body->mass));
 
       body->integrateVerlet(dT - kPhysicStep < kPhysicStep);
     }

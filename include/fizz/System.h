@@ -15,6 +15,7 @@ class System {
   System() : m_id(Util::nextId()) {}
 
   bool effectedByGravity{true};
+  double gravity{50};
 
   Body* createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
   Body* getBody(int id);
