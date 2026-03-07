@@ -15,10 +15,6 @@ endif()
 
 add_subdirectory(src)
 
-if(NOT DEFINED BUILD_FIZZ_EXAMPLES)
-  set(BUILD_FIZZ_EXAMPLES ON)
-endif()
-
 if(BUILD_FIZZ_EXAMPLES)
   add_subdirectory(examples)
 endif()
