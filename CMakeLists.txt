@@ -12,6 +12,7 @@ if(ASAN)
   add_link_options(-fsanitize=address)
 endif()
 
+set(FIZZ_PYTHON_DIR ${CMAKE_SOURCE_DIR}/python/fizz)
 add_subdirectory(src)
 
 if(BUILD_FIZZ_EXAMPLES)

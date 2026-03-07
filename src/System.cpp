@@ -2,6 +2,7 @@
 #include "fizz/Constants.h"
 
 #include <cassert>
+#include <iostream>
 
 Body* System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
 {

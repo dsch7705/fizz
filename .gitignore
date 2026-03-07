@@ -1,3 +1,7 @@
 .cache/
 build*/
 compile_commands.json
+
+python/main.py
+__pycache__/
+libfizz.*

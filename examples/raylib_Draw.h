@@ -4,22 +4,22 @@
 
 #include "raylib.h"
 
-inline void raylib_circle(double x, double y, float radius, Draw::Color color)
+inline void raylib_circle(const DVec2& center, float radius, Draw::Color color)
 {
   Color c;
   c.r = color.r;
   c.g = color.g;
   c.b = color.b;
   c.a = color.a;
-  DrawCircle(x, y, radius, c);
+  DrawCircle(center.x, center.y, radius, c);
 }
 
-inline void raylib_line(double x0, double y0, double x1, double y1, Draw::Color color)
+inline void raylib_line(const DVec2& p0, const DVec2& p1, Draw::Color color)
 {
   Color c;
   c.r = color.r;
   c.g = color.g;
   c.b = color.b;
   c.a = color.a;
-  DrawLine(x0, y0, x1, y1, c);
+  DrawLine(p0.x, p0.y, p1.x, p1.y, c);
 }

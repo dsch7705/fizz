@@ -4,6 +4,8 @@
 #include "fizz/System.h"
 #include "fizz/Util.h"
 
+#include <iostream>
+
 Body::Body(const DVec2& pos, double radius, bool isKinematic, double mass)
     : m_id(Util::nextId()),
       m_pos(pos),
@@ -52,7 +54,7 @@ void Body::addImpulse(const DVec2& j)
 
 void Body::draw(Draw::Color color) const
 {
-  Draw::circle(m_pos.x, m_pos.y, radius, color);
+  Draw::circle(m_pos, radius, color);
 }
 
 void Body::setPos(const DVec2& pos)
