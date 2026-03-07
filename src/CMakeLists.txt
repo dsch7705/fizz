@@ -16,6 +16,10 @@ set(FIZZ_SRC
 add_library(fizz ${FIZZ_SRC})
 target_include_directories(fizz PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
+if(MSVC)
+  set_property(TARGET fizz PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
+
 if(BUILD_SHARED_LIBS)  
   add_custom_command(
     TARGET fizz
