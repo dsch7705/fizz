@@ -11,7 +11,6 @@
 Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool springs) : System()
 {
   Body* lastBody = createBody(anchor, 0.25, true);
-  m_head = lastBody;
 
   for (int i = 0; i < nLinks; ++i) {
     double angle = (std::rand() % 360) * (kPi / 180.0);
@@ -30,6 +29,4 @@ Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool spring
 
     lastBody = currentBody;
   }
-
-  m_tail = lastBody;
 }
