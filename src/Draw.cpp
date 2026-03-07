@@ -19,25 +19,28 @@ namespace Draw {
     return pos / transform.scale - transform.offset;
   }
 
-  CircleFunc drawCircleFunc;
-  void setCircleFunc(CircleFunc func)
+  CircleCallback drawCircleCallback;
+  void setCircleCallback(CircleCallback func)
   {
-    drawCircleFunc = func;
+    drawCircleCallback = func;
   }
   
-  LineFunc drawLineFunc;
-  void setLineFunc(LineFunc func)
+  LineCallback drawLineCallback;
+  void setLineCallback(LineCallback func)
   {
-    drawLineFunc = func;
+    drawLineCallback = func;
   }
   
-  void circle(const DVec2& center, float radius, Color color)
+  void circle(double x, double y, float radius, Color color)
   {
-    drawCircleFunc(worldToScreen(center), radius * transform.scale, color);
+    auto center = worldToScreen({x, y});
+    drawCircleCallback(center.x, center.y, radius * transform.scale, color);
   }
   
-  void line(const DVec2& p0, const DVec2& p1, Color color)
+  void line(double x0, double y0, double x1, double y1, Color color)
   {
-    drawLineFunc(worldToScreen(p0), worldToScreen(p1), color);
+    auto p0 = worldToScreen({x0, y0});
+    auto p1 = worldToScreen({x1, y1});
+    drawLineCallback(p0.x, p0.y, p1.x, p1.y, color);
   }
 }

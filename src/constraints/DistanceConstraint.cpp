@@ -39,5 +39,5 @@ void DistanceConstraint::solve()
 void DistanceConstraint::draw(Draw::Color color) const
 {
   assert(m_b0 != nullptr && m_b1 != nullptr);
-  Draw::line(m_b0->pos(), m_b1->pos(), color);
+  Draw::line(m_b0->pos().x, m_b0->pos().y, m_b1->pos().x, m_b1->pos().y, color);
 }

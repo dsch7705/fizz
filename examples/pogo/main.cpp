@@ -7,8 +7,8 @@
 
 int main(int argc, char** argv)
 {
-  Draw::setCircleFunc(raylib_circle);
-  Draw::setLineFunc(raylib_line);
+  Draw::setCircleCallback(raylib_circle);
+  Draw::setLineCallback(raylib_line);
 
   constexpr int screenW = 640;
   constexpr int screenH = 480;

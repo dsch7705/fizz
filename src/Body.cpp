@@ -52,7 +52,7 @@ void Body::addImpulse(const DVec2& j)
 
 void Body::draw(Draw::Color color) const
 {
-  Draw::circle(m_pos, radius, color);
+  Draw::circle(m_pos.x, m_pos.y, radius, color);
 }
 
 void Body::setPos(const DVec2& pos)
