@@ -1,7 +1,6 @@
 set(FIZZ_SRC
   Body.cpp
   Constraint.cpp
-  DVec.cpp
   System.cpp
   Util.cpp
   Draw.cpp
