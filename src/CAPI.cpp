@@ -60,4 +60,15 @@ extern "C" {
     };
     Draw::setLineCallback(cb);
   }
+
+  FIZZ_API Draw::Transform draw_get_transform()
+  {
+    return Draw::getTransform();
+  }
+  FIZZ_API void draw_set_transform(Draw::Transform transform)
+  {
+    Draw::Transform& t = Draw::getTransform();
+    t.offset = transform.offset;
+    t.scale = transform.scale;
+  }
 }

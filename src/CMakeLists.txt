@@ -9,7 +9,7 @@ set(FIZZ_SRC
   constraints/SpringConstraint.cpp
   constraints/PositionConstraint.cpp
   
-  ../python/PyAPI.cpp
+  cAPI.cpp
 )
 
 add_library(fizz ${FIZZ_SRC})
