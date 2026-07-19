@@ -4,16 +4,16 @@
 
 #include <cassert>
 
-PairConstraint::PairConstraint(Body* b0, Body* b1) : Constraint(), m_b0(b0), m_b1(b1)
+PairConstraint::PairConstraint(System* system, ID id, ID b0, ID b1) : Constraint(system, id), m_b0(b0), m_b1(b1)
 {
-  m_n = DVec2::normalize(b1->pos() - b0->pos());
+  const auto& body0 = system->getBody(b0);
+  const auto& body1 = system->getBody(b1);
+  m_n = DVec2::normalize(body1.pos() - body0.pos());
 }
 
-void RangeConstraint::addSystem(System* system)
+void RangeConstraint::addSystem()
 {
-  assert(system != nullptr);
-
-  for (auto& [_, body] : system->bodies()) {
-    addBody(body.get());
+  for (auto& body : m_system->bodies()) {
+    addBody(body.id());
   }
 }

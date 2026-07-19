@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Constants.h"
 #include "DVec.h"
 #include "Draw.h"
 #include "Util.h"
@@ -12,25 +13,28 @@ class Body;
 class System;
 
 struct Constraint {
-  Constraint() : m_id(Util::nextId()) {}
+  Constraint(System* system, ID id) : m_system(system), m_id(id) {}
   virtual ~Constraint() {}
   virtual void solve() = 0;
   virtual void draw(Draw::Color color) const {}
 
-  const int id() const { return m_id; }
+  ID id() const { return m_id; }
 
  protected:
-  const int m_id;
+  System* m_system;
+
+ private:
+  ID m_id;
 };
 
 struct PairConstraint : public Constraint {
-  PairConstraint(Body* b0, Body* b1);
-  Body* b0() const { return m_b0; }
-  Body* b1() const { return m_b1; }
+  PairConstraint(System* system, ID id, ID b0, ID b1);
+  ID b0() const { return m_b0; }
+  ID b1() const { return m_b1; }
 
  protected:
-  Body* m_b0;
-  Body* m_b1;
+  ID m_b0;
+  ID m_b1;
 
   // Normalized direction vector from b0 -> b1
   DVec2 m_n;
@@ -38,26 +42,19 @@ struct PairConstraint : public Constraint {
 
 struct RangeConstraint : public Constraint {
   template <typename... Ts>
-    requires(std::same_as<Ts, Body*> && ...)
-  RangeConstraint(Ts... bodies) : Constraint(), m_bodies({bodies...})
+    requires(std::same_as<Ts, ID> && ...)
+  RangeConstraint(System* system, ID id, Ts... bodies) : Constraint(system, id), m_bodies({bodies...})
   {
   }
 
-  template <typename... Bs>
-    requires(std::same_as<Bs, Body*> && ...)
-  void addBody(Bs... bodies)
+  template <typename... IDs>
+  void addBody(IDs... ids)
   {
-    auto check = [](auto* b) {
-      if (!b)
-        throw std::invalid_argument("Body cannot be null");
-    };
-    (check(bodies), ...);
-
-    (m_bodies.insert(bodies), ...);
+    (m_bodies.push_back(ids), ...);
   }
 
-  void addSystem(System* system);
+  void addSystem();
 
  protected:
-  std::set<Body*> m_bodies;
+  std::vector<ID> m_bodies;
 };

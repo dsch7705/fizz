@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 
   constexpr int screenW = 640;
   constexpr int screenH = 480;
-  
+
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 50;
   transform.offset = DVec2(screenW, screenH) / transform.scale / 2;
@@ -20,8 +20,8 @@ int main(int argc, char** argv)
   DVec2 worldSize = DVec2(screenW, screenH) / transform.scale;
 
   System system;
-  Body* b0 = system.createBody({0, -worldSize.y / 2}, 0.5, false, 1.0);
-  Body* b1 = system.createBody({0, 0}, 0.5, false, 1.0);
+  ID b0 = system.createBody({0, -worldSize.y / 2}, 0.5, false, 1.0);
+  ID b1 = system.createBody({0, 0}, 0.5, false, 1.0);
   system.createConstraint<SpringConstraint>(b0, b1);
   system.createConstraint<PositionConstraint>(DVec2(-worldSize.x / 2, -worldSize.y * 2), worldSize / 2, 0.6, b0, b1);
 
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
     if (IsKeyDown(KEY_SPACE))
-      b0->addForce(DVec2(0.0, 250.0));
+      system.getBody(b0).addForce(DVec2(0.0, 250.0));
 
     system.update(GetFrameTime());
 

@@ -1,19 +1,20 @@
 #pragma once
 
+#include "Constants.h"
 #include "DVec.h"
 #include "Draw.h"
 
 class System;
 class Body {
  public:
-  Body(const DVec2& pos, double radius, bool isKinematic = false, double mass = 1.0);
+  Body(ID id, const DVec2& pos, double radius, bool isKinematic = false, double mass = 1.0);
 
   void setPos(const DVec2& pos);
   DVec2 pos() const { return m_pos; }
   DVec2 lastPos() const { return m_lastPos; }
   DVec2 velocity() const { return m_velocity; }
 
-  const int id() const { return m_id; }
+  const ID id() const { return m_id; }
 
   double radius;
   double mass;
@@ -32,7 +33,7 @@ class Body {
   virtual void draw(Draw::Color color) const;
 
  private:
-  const int m_id;
+  const ID m_id;
 
   DVec2 m_pos;
   DVec2 m_lastPos;

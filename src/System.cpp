@@ -4,46 +4,48 @@
 #include <cassert>
 #include <iostream>
 
-Body* System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
+ID System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
 {
-  auto body = std::make_unique<Body>(pos, radius, isKinematic, mass);
-  Body* ptr = body.get();
-  m_bodies.emplace(body->id(), std::move(body));
-
-  return ptr;
+  // auto body = std::make_unique<Body>(pos, radius, isKinematic, mass);
+  // Body* ptr = body.get();
+  ID id = m_bodies.emplace_back(m_bodies.getNextID(), pos, radius, isKinematic, mass);
+  return id;
 }
 
-Body* System::getBody(int id)
+Body& System::getBody(ID id)
 {
-  if (!m_bodies.contains(id))
-    return nullptr;
+  // if (!m_bodies.contains(id))
+  //   return nullptr;
 
-  return m_bodies.at(id).get();
+  // return m_bodies.at(id).get();
+  return m_bodies[id];
 }
 
 void System::draw(Draw::Color color) const
 {
-  for (auto& [_, constraint] : m_constraints) {
-    constraint->draw(color);
+  for (auto& constraint : m_constraints) {
+    const auto& base = constraintBase(constraint);
+    base.draw(color);
   }
 
-  for (const auto& [_, body] : m_bodies) {
-    body->draw(color);
+  for (const auto& body : m_bodies) {
+    body.draw(color);
   }
 }
 
 void System::update(double dT)
 {
   while (dT >= kPhysicStep) {
-    for (auto& [_, constraint] : m_constraints) {
-      constraint->solve();
+    for (auto& constraint : m_constraints) {
+      auto& base = constraintBase(constraint);
+      base.solve();
     }
 
-    for (auto& [_, body] : m_bodies) {
+    for (auto& body : m_bodies) {
       if (effectedByGravity)
-        body->addConstraintForce(DVec2(0.0, gravity * body->mass));
+        body.addConstraintForce(DVec2(0.0, gravity * body.mass));
 
-      body->integrateVerlet(dT - kPhysicStep < kPhysicStep);
+      body.integrateVerlet(dT - kPhysicStep < kPhysicStep);
     }
 
     dT -= kPhysicStep;
@@ -56,7 +58,7 @@ void System::clear()
   m_constraints.clear();
 }
 
-void System::removeConstraint(int id)
+void System::removeConstraint(ID id)
 {
   m_constraints.erase(id);
 }

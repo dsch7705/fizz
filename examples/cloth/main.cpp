@@ -6,8 +6,8 @@
 
 #include "../raylib_Draw.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 {
@@ -26,8 +26,8 @@ bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
 void grid(System& system)
 {
   constexpr double size = 0.4;
-  constexpr int w = 29;
-  constexpr int h = 15;
+  constexpr int w = 100;
+  constexpr int h = 17;
   const DVec2 offset(w * size / 2, h * size * 0.8);
 
   constexpr double k = 50000.0;
@@ -35,19 +35,19 @@ void grid(System& system)
 
   constexpr int anchorW = 5;
 
-  std::vector<Body*> row, lastRow;
-  Body* lastBody = nullptr;
+  std::vector<ID> row, lastRow;
+  ID lastBody = -1;
   for (int i_y = 0; i_y < h; i_y++) {
-    Body* lastB = nullptr;
+    ID lastB = -1;
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      Body* b = system.createBody(DVec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
+      ID b = system.createBody(DVec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
       row.push_back(b);
       if (i_x < lastRow.size()) {
         system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
       }
-      if (lastB) {
+      if (lastB != -1) {
         system.createConstraint<SpringConstraint>(b, lastB, k, damping);
       }
 
@@ -68,34 +68,34 @@ int main(int argc, char** argv)
   constexpr int screenH = 480;
 
   Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 50;
+  transform.scale = 10;
   transform.offset = DVec2(screenW, screenH) / transform.scale / 2;
 
   System system;
   grid(system);
 
   InitWindow(screenW, screenH, "Cloth");
-  SetTargetFPS(60);
+  SetTargetFPS(kTargetFPS);
 
   DVec2 lastMouse;
-  std::vector<Constraint*> toDelete;
+  std::vector<ID> toDelete;
   while (!WindowShouldClose()) {
     DVec2 mouse(GetMouseX(), GetMouseY());
     mouse = Draw::screenToWorld(mouse);
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
-      for (auto& [id, constraint] : system.constraints()) {
-        SpringConstraint* s = dynamic_cast<SpringConstraint*>(constraint.get());
-        if (!s)
-          continue;
+      for (auto& constraint : system.constraints()) {
+        auto& s = std::get<SpringConstraint>(constraint);
+        const auto& b0 = system.getBody(s.b0());
+        const auto& b1 = system.getBody(s.b1());
 
-        if (intersects(mouse, lastMouse, s->b0()->pos(), s->b1()->pos())) {
-          toDelete.push_back(s);
+        if (intersects(mouse, lastMouse, b0.pos(), b1.pos())) {
+          toDelete.push_back(s.id());
         }
       }
 
-      for (Constraint* c : toDelete) {
-        system.removeConstraint(c->id());
+      for (ID id : toDelete) {
+        system.removeConstraint(id);
       }
       toDelete.clear();
     }
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
     BeginDrawing();
 
     ClearBackground(BLACK);
-    system.draw(Draw::Color{255, 255, 255, 255});
+    // system.draw(Draw::Color{255, 255, 255, 255});
 
     DrawText(std::to_string(GetFPS()).c_str(), 5, 5, 30, GREEN);
 

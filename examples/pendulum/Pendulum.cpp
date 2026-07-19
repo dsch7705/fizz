@@ -10,16 +10,16 @@
 
 Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool springs) : System()
 {
-  Body* lastBody = createBody(anchor, 0.25, true);
+  ID lastBody = createBody(anchor, 0.25, true);
 
   for (int i = 0; i < nLinks; ++i) {
     double angle = (std::rand() % 360) * (kPi / 180.0);
     DVec2 dir{cos(angle) * distance, sin(angle) * distance};
 
-    Body* currentBody = createBody(lastBody->pos() + dir, 0.25);
+    ID currentBody = createBody(getBody(lastBody).pos() + dir, 0.25);
     if (i == 0) {
-      currentBody->mass = 1000.0;
-      currentBody->radius = 0.5;
+      getBody(currentBody).mass = 1000.0;
+      getBody(currentBody).radius = 0.5;
     }
 
     if (springs)

@@ -5,10 +5,26 @@
 #include "Draw.h"
 #include "Util.h"
 
+#include "civ.hpp"
+#include "fizz/constraints/DistanceConstraint.h"
+#include "fizz/constraints/PositionConstraint.h"
+#include "fizz/constraints/SpringConstraint.h"
+
 #include <memory>
-#include <unordered_map>
+#include <variant>
 
 class Body;
+
+using ConstraintVariant = std::variant<DistanceConstraint, PositionConstraint, SpringConstraint>;
+
+inline Constraint& constraintBase(ConstraintVariant& v)
+{
+  return std::visit([](auto& obj) -> Constraint& { return obj; }, v);
+}
+inline const Constraint& constraintBase(const ConstraintVariant& v)
+{
+  return std::visit([](const auto& obj) -> const Constraint& { return obj; }, v);
+}
 
 class System {
  public:
@@ -17,27 +33,30 @@ class System {
   bool effectedByGravity{true};
   double gravity{50};
 
-  Body* createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
-  Body* getBody(int id);
+  ID createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
+  Body& getBody(ID id);
 
   template <typename T, typename... Args>
     requires std::derived_from<T, Constraint>
-  T* createConstraint(Args... args)
+  ID createConstraint(Args... args)
   {
-    auto constraint = std::make_unique<T>(args...);
-    T* ptr = constraint.get();
-    m_constraints.emplace(constraint->id(), std::move(constraint));
+    // auto constraint = std::make_unique<T>(args...);
+    // T* ptr = constraint.get();
+    // m_constraints.emplace(constraint->id(), std::move(constraint));
+    //
+    // return ptr;
+    ID id = m_constraints.emplace_back(T(this, m_constraints.getNextID(), std::forward<Args>(args)...));
 
-    return ptr;
+    return id;
   }
-  void removeConstraint(int id);
+  void removeConstraint(ID id);
 
   virtual void draw(Draw::Color color) const;
   void update(double dT);
   void clear();
 
-  const std::unordered_map<int, std::unique_ptr<Body>>& bodies() const { return m_bodies; }
-  const std::unordered_map<int, std::unique_ptr<Constraint>>& constraints() const { return m_constraints; }
+  const auto& bodies() const { return m_bodies; }
+  const auto& constraints() const { return m_constraints; }
 
   const int id() const { return m_id; }
 
@@ -45,6 +64,9 @@ class System {
   const int m_id;
 
  private:
-  std::unordered_map<int, std::unique_ptr<Body>> m_bodies;
-  std::unordered_map<int, std::unique_ptr<Constraint>> m_constraints;
+  civ::IndexVector<Body> m_bodies;
+  civ::IndexVector<ConstraintVariant> m_constraints;
+
+  // std::unordered_map<int, std::unique_ptr<Body>> m_bodies;
+  // std::unordered_map<int, std::unique_ptr<Constraint>> m_constraints;
 };

@@ -2,32 +2,36 @@
 
 #include "fizz/Body.h"
 #include "fizz/Draw.h"
+#include "fizz/System.h"
 
-DistanceConstraint::DistanceConstraint(Body* b0, Body* b1) : PairConstraint(b0, b1)
+DistanceConstraint::DistanceConstraint(System* system, ID id, ID b0, ID b1) : PairConstraint(system, id, b0, b1)
 {
-  distance = (m_b1->pos() - m_b0->pos()).mag();
+  const auto& body0 = system->getBody(b0);
+  const auto& body1 = system->getBody(b1);
+  distance = (body1.pos() - body0.pos()).mag();
 }
 
 void DistanceConstraint::solve()
 {
-  assert(m_b0 != nullptr && m_b1 != nullptr);
+  Body& body0 = m_system->getBody(m_b0);
+  Body& body1 = m_system->getBody(m_b1);
 
-  DVec2& p0 = m_b0->m_pos;
-  DVec2& p1 = m_b1->m_pos;
+  auto& p0 = body0.m_pos;
+  auto& p1 = body1.m_pos;
   DVec2 diff = p1 - p0;
   double mag = diff.mag();
   diff.normalize();
 
-  double w0 = 1.0 / m_b0->mass;
-  double w1 = 1.0 / m_b1->mass;
+  double w0 = 1.0 / body0.mass;
+  double w1 = 1.0 / body1.mass;
   double wSum = w0 + w1;
 
   double delta = (mag - distance) / wSum;
 
-  if (m_b0->isKinematic) {
+  if (body0.isKinematic) {
     p1 -= diff * delta;
   }
-  else if (m_b1->isKinematic) {
+  else if (body1.isKinematic) {
     p0 += diff * delta;
   }
   else {
@@ -38,6 +42,7 @@ void DistanceConstraint::solve()
 
 void DistanceConstraint::draw(Draw::Color color) const
 {
-  assert(m_b0 != nullptr && m_b1 != nullptr);
-  Draw::line(m_b0->pos(), m_b1->pos(), color);
+  Body& body0 = m_system->getBody(m_b0);
+  Body& body1 = m_system->getBody(m_b1);
+  Draw::line(body0.pos(), body1.pos(), color);
 }

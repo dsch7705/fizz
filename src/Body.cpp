@@ -6,14 +6,8 @@
 
 #include <iostream>
 
-Body::Body(const DVec2& pos, double radius, bool isKinematic, double mass)
-    : m_id(Util::nextId()),
-      m_pos(pos),
-      m_lastPos(pos),
-      m_velocity(DVec2(0.0)),
-      radius(radius),
-      mass(mass),
-      isKinematic(isKinematic)
+Body::Body(ID id, const DVec2& pos, double radius, bool isKinematic, double mass)
+    : m_id(id), m_pos(pos), m_lastPos(pos), m_velocity(DVec2(0.0)), radius(radius), mass(mass), isKinematic(isKinematic)
 {
 }
 
