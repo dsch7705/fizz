@@ -4,7 +4,7 @@
 
 #include "raylib.h"
 
-inline void raylib_circle(const DVec2& center, float radius, Draw::Color color)
+inline void raylib_circle(const Vec2& center, float radius, Draw::Color color)
 {
   Color c;
   c.r = color.r;
@@ -14,7 +14,7 @@ inline void raylib_circle(const DVec2& center, float radius, Draw::Color color)
   DrawCircle(center.x, center.y, radius, c);
 }
 
-inline void raylib_line(const DVec2& p0, const DVec2& p1, Draw::Color color)
+inline void raylib_line(const Vec2& p0, const Vec2& p1, Draw::Color color)
 {
   Color c;
   c.r = color.r;

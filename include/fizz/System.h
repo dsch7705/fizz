@@ -31,9 +31,9 @@ class System {
   System() : m_id(Util::nextId()) {}
 
   bool effectedByGravity{true};
-  double gravity{50};
+  float gravity{50};
 
-  ID createBody(const DVec2& pos, double radius = 0.2, bool isKinematic = false, double mass = 1.0);
+  ID createBody(const Vec2& pos, float radius = 0.2, bool isKinematic = false, float mass = 1.0);
   Body& getBody(ID id);
 
   template <typename T, typename... Args>
@@ -52,7 +52,7 @@ class System {
   void removeConstraint(ID id);
 
   virtual void draw(Draw::Color color) const;
-  void update(double dT);
+  void update(float dT);
   void clear();
 
   const auto& bodies() const { return m_bodies; }

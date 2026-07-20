@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-SpringConstraint::SpringConstraint(System* system, ID id, ID b0, ID b1, double k, double damping)
+SpringConstraint::SpringConstraint(System* system, ID id, ID b0, ID b1, float k, float damping)
     : PairConstraint(system, id, b0, b1), k(k), damping(damping)
 {
   const auto& body0 = system->getBody(b0);
@@ -23,29 +23,29 @@ void SpringConstraint::solve()
   if (body0.isKinematic && body1.isKinematic)
     return;
 
-  DVec2 p0 = body0.pos();
-  DVec2 p1 = body1.pos();
-  DVec2 diff = p1 - p0;
-  double mag = diff.mag();
+  Vec2 p0 = body0.pos();
+  Vec2 p1 = body1.pos();
+  Vec2 diff = p1 - p0;
+  float mag = diff.mag();
   if (mag != 0)
     m_n = diff / mag;
 
   // Hooke's Law
-  double x = mag - length;
-  double Fs = -k * x;
+  float x = mag - length;
+  float Fs = -k * x;
 
-  DVec2 v0 = body0.velocity();
-  DVec2 v1 = body1.velocity();
-  DVec2 vrel = v1 - v0;
+  Vec2 v0 = body0.velocity();
+  Vec2 v1 = body1.velocity();
+  Vec2 vrel = v1 - v0;
 
-  double c = damping;
+  float c = damping;
   if (c < 0.0) {  // Apply critical damping if the damping factor is below zero
-    double m = (body0.mass * body1.mass) / (body0.mass + body1.mass);
+    float m = (body0.mass * body1.mass) / (body0.mass + body1.mass);
     c = 2 * sqrt(k * m);
   }
-  double Fd = -c * vrel.dot(m_n);
+  float Fd = -c * vrel.dot(m_n);
 
-  double force = Fs + Fd;
+  float force = Fs + Fd;
   if (body0.isKinematic) {
     body1.addConstraintForce(diff * force);
   }
@@ -63,12 +63,12 @@ void SpringConstraint::draw(Draw::Color color) const
   const auto& body0 = m_system->getBody(m_b0);
   const auto& body1 = m_system->getBody(m_b1);
 
-  DVec2 p0 = body0.pos();
-  DVec2 p1 = body1.pos();
-  DVec2 n = p1 - p0;
-  double mag = n.mag();
+  Vec2 p0 = body0.pos();
+  Vec2 p1 = body1.pos();
+  Vec2 n = p1 - p0;
+  float mag = n.mag();
   n.normalize();
-  DVec2 perp = {-n.y, n.x};
+  Vec2 perp = {-n.y, n.x};
 
   Draw::line(p0, p1, color);
 
@@ -76,12 +76,12 @@ void SpringConstraint::draw(Draw::Color color) const
   // float half_w = std::min(m_b0->radius, m_b1->radius);
   // int n_coils = std::min(length / coil_spacing, 2.);
 
-  // DVec2 last_p0;
+  // Vec2 last_p0;
   // for (int i = 0; i < n_coils; i++) {
-  //   double t = (mag / n_coils) * i;
-  //   DVec2 line_center = p0 + n * t;
-  //   DVec2 line_p0 = line_center + perp * half_w;
-  //   DVec2 line_p1 = line_center - perp * half_w;
+  //   float t = (mag / n_coils) * i;
+  //   Vec2 line_center = p0 + n * t;
+  //   Vec2 line_p0 = line_center + perp * half_w;
+  //   Vec2 line_p1 = line_center - perp * half_w;
   //   Draw::line(line_p0, line_p1, color);
   //   if (i != 0)
   //     Draw::line(last_p0, line_p1, color);

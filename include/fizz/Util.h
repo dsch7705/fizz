@@ -1,11 +1,11 @@
 #pragma once
 
-#include "DVec.h"
+#include "Vec2.h"
 
 namespace Util {
 
-//DVec2 worldToScreen(DVec2 coord);
-//DVec2 screenToWorld(DVec2 coord);
+// Vec2 worldToScreen(Vec2 coord);
+// Vec2 screenToWorld(Vec2 coord);
 
 int nextId();
 

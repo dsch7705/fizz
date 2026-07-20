@@ -9,9 +9,9 @@
 #include <string>
 #include <vector>
 
-bool intersects(const DVec2& a, const DVec2& b, const DVec2& c, const DVec2& d)
+bool intersects(const Vec2& a, const Vec2& b, const Vec2& c, const Vec2& d)
 {
-  auto orient = [](const DVec2& p, const DVec2& q, const DVec2& r) {
+  auto orient = [](const Vec2& p, const Vec2& q, const Vec2& r) {
     return (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
   };
 
@@ -28,7 +28,7 @@ void grid(System& system)
   constexpr double size = 0.4;
   constexpr int w = 100;
   constexpr int h = 17;
-  const DVec2 offset(w * size / 2, h * size * 0.8);
+  const Vec2 offset(w * size / 2, h * size * 0.8);
 
   constexpr double k = 50000.0;
   constexpr double damping = -1.0;
@@ -42,7 +42,7 @@ void grid(System& system)
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      ID b = system.createBody(DVec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
+      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
       row.push_back(b);
       if (i_x < lastRow.size()) {
         system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 10;
-  transform.offset = DVec2(screenW, screenH) / transform.scale / 2;
+  transform.offset = Vec2(screenW, screenH) / transform.scale / 2;
 
   System system;
   grid(system);
@@ -77,10 +77,10 @@ int main(int argc, char** argv)
   InitWindow(screenW, screenH, "Cloth");
   SetTargetFPS(kTargetFPS);
 
-  DVec2 lastMouse;
+  Vec2 lastMouse;
   std::vector<ID> toDelete;
   while (!WindowShouldClose()) {
-    DVec2 mouse(GetMouseX(), GetMouseY());
+    Vec2 mouse(GetMouseX(), GetMouseY());
     mouse = Draw::screenToWorld(mouse);
 
     if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
@@ -110,7 +110,7 @@ int main(int argc, char** argv)
     BeginDrawing();
 
     ClearBackground(BLACK);
-    // system.draw(Draw::Color{255, 255, 255, 255});
+    system.draw(Draw::Color{255, 255, 255, 255});
 
     DrawText(std::to_string(GetFPS()).c_str(), 5, 5, 30, GREEN);
 

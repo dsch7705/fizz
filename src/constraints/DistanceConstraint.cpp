@@ -18,15 +18,15 @@ void DistanceConstraint::solve()
 
   auto& p0 = body0.m_pos;
   auto& p1 = body1.m_pos;
-  DVec2 diff = p1 - p0;
-  double mag = diff.mag();
+  Vec2 diff = p1 - p0;
+  float mag = diff.mag();
   diff.normalize();
 
-  double w0 = 1.0 / body0.mass;
-  double w1 = 1.0 / body1.mass;
-  double wSum = w0 + w1;
+  float w0 = 1.0 / body0.mass;
+  float w1 = 1.0 / body1.mass;
+  float wSum = w0 + w1;
 
-  double delta = (mag - distance) / wSum;
+  float delta = (mag - distance) / wSum;
 
   if (body0.isKinematic) {
     p1 -= diff * delta;

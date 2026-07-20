@@ -3,13 +3,13 @@
 #include "../Constraint.h"
 
 struct SpringConstraint : public PairConstraint {
-  SpringConstraint(System* system, ID id, ID b0, ID b1, double k = 150.0, double damping = 1.0);
+  SpringConstraint(System* system, ID id, ID b0, ID b1, float k = 150.0, float damping = 1.0);
 
-  double length;
-  double k;
-  double damping;
+  float length;
+  float k;
+  float damping;
 
-  inline static const double minDistance{1.0};
+  inline static const float minDistance{1.0};
 
   void solve() override;
   void draw(Draw::Color color) const override;

@@ -8,13 +8,13 @@
 
 #include <cmath>
 
-Pendulum::Pendulum(int nLinks, const DVec2& anchor, double distance, bool springs) : System()
+Pendulum::Pendulum(int nLinks, const Vec2& anchor, float distance, bool springs) : System()
 {
   ID lastBody = createBody(anchor, 0.25, true);
 
   for (int i = 0; i < nLinks; ++i) {
     double angle = (std::rand() % 360) * (kPi / 180.0);
-    DVec2 dir{cos(angle) * distance, sin(angle) * distance};
+    Vec2 dir{cosf(angle) * distance, sinf(angle) * distance};
 
     ID currentBody = createBody(getBody(lastBody).pos() + dir, 0.25);
     if (i == 0) {

@@ -4,7 +4,7 @@
 #include <cassert>
 #include <iostream>
 
-ID System::createBody(const DVec2& pos, double radius, bool isKinematic, double mass)
+ID System::createBody(const Vec2& pos, float radius, bool isKinematic, float mass)
 {
   // auto body = std::make_unique<Body>(pos, radius, isKinematic, mass);
   // Body* ptr = body.get();
@@ -33,7 +33,7 @@ void System::draw(Draw::Color color) const
   }
 }
 
-void System::update(double dT)
+void System::update(float dT)
 {
   while (dT >= kPhysicStep) {
     for (auto& constraint : m_constraints) {
@@ -43,7 +43,7 @@ void System::update(double dT)
 
     for (auto& body : m_bodies) {
       if (effectedByGravity)
-        body.addConstraintForce(DVec2(0.0, gravity * body.mass));
+        body.addConstraintForce(Vec2(0.0, gravity * body.mass));
 
       body.integrateVerlet(dT - kPhysicStep < kPhysicStep);
     }

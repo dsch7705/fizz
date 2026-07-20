@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Constants.h"
-#include "DVec.h"
 #include "Draw.h"
 #include "Util.h"
+#include "Vec2.h"
 
 #include <cassert>
 #include <concepts>
@@ -37,7 +37,7 @@ struct PairConstraint : public Constraint {
   ID m_b1;
 
   // Normalized direction vector from b0 -> b1
-  DVec2 m_n;
+  Vec2 m_n;
 };
 
 struct RangeConstraint : public Constraint {

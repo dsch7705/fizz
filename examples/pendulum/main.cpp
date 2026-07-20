@@ -17,11 +17,11 @@ int main(int argc, char** argv)
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 50;
-  transform.offset = DVec2(screenW, screenH) / transform.scale / 2;
+  transform.offset = Vec2(screenW, screenH) / transform.scale / 2;
 
   int links = 2;
   double distance = screenH / transform.scale / 2 / links * 0.9;
-  Pendulum p(2, DVec2(0, 0), distance, false);
+  Pendulum p(2, Vec2(0, 0), distance, false);
 
   InitWindow(screenW, screenH, "Pendulum");
   SetTargetFPS(60);

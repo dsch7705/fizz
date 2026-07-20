@@ -4,5 +4,5 @@
 
 class Pendulum : public System {
  public:
-  Pendulum(int nLinks, const DVec2& anchor, double distance, bool springs = false);
+  Pendulum(int nLinks, const Vec2& anchor, float distance, bool springs = false);
 };

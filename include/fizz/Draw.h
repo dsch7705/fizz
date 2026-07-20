@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DVec.h"
+#include "Vec2.h"
 
 #include <cstdint>
 #include <functional>
@@ -14,11 +14,11 @@ struct Color {
   uint8_t a;
 };
 
-using CircleCallback = std::function<void(const DVec2& center, float radius, Color color)>;
-using LineCallback = std::function<void(const DVec2& p0, const DVec2& p1, Color color)>;
+using CircleCallback = std::function<void(const Vec2& center, float radius, Color color)>;
+using LineCallback = std::function<void(const Vec2& p0, const Vec2& p1, Color color)>;
 
 struct Transform {
-  DVec2 offset;
+  Vec2 offset;
   double scale;
 };
 
@@ -27,12 +27,12 @@ void setLineCallback(LineCallback func);
 
 Transform& getTransform();
 
-DVec2 worldToScreen(const DVec2& pos);
-DVec2 screenToWorld(const DVec2& pos);
+Vec2 worldToScreen(const Vec2& pos);
+Vec2 screenToWorld(const Vec2& pos);
 
 // Note: center and radius should be in world space
-void circle(const DVec2& center, float radius, Color color);
+void circle(const Vec2& center, float radius, Color color);
 // Note: p0 and p1 should be in world space
-void line(const DVec2& p0, const DVec2& p1, Color color);
+void line(const Vec2& p0, const Vec2& p1, Color color);
 
 }  // namespace Draw

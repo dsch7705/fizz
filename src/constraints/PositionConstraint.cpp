@@ -8,9 +8,9 @@ void PositionConstraint::solve()
   for (ID b : m_bodies) {
     Body& body = m_system->getBody(b);
 
-    DVec2& p0 = body.m_pos;
-    DVec2& p0_last = body.m_lastPos;
-    DVec2 Dp0 = p0 - p0_last;
+    Vec2& p0 = body.m_pos;
+    Vec2& p0_last = body.m_lastPos;
+    Vec2 Dp0 = p0 - p0_last;
     Dp0.scale(bounce);
 
     if (p0.x - body.radius < minPos.x) {

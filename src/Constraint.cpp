@@ -8,7 +8,7 @@ PairConstraint::PairConstraint(System* system, ID id, ID b0, ID b1) : Constraint
 {
   const auto& body0 = system->getBody(b0);
   const auto& body1 = system->getBody(b1);
-  m_n = DVec2::normalize(body1.pos() - body0.pos());
+  m_n = Vec2::normalize(body1.pos() - body0.pos());
 }
 
 void RangeConstraint::addSystem()
