@@ -1,4 +1,4 @@
-# fizz - A PBD, 2D physics library
+# fizz - A 2D Verlet physics library
 ### Note: This library is a work in progress; expect bugs and peculiar behavior
 fizz is a physics library that leverages a traditional Verlet integrator for superior energy conservation and numerical stability.
 
