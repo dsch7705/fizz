@@ -6,6 +6,7 @@
 
 #include "../raylib_Draw.h"
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -27,7 +28,7 @@ void grid(System& system)
 {
   constexpr double size = 0.4;
   constexpr int w = 100;
-  constexpr int h = 17;
+  constexpr int h = 75;
   const Vec2 offset(w * size / 2, h * size * 0.8);
 
   constexpr double k = 50000.0;
@@ -42,7 +43,7 @@ void grid(System& system)
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.025, isAnchor);
+      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.02, isAnchor);
       row.push_back(b);
       if (i_x < lastRow.size()) {
         system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
@@ -59,23 +60,30 @@ void grid(System& system)
   }
 }
 
+constexpr int screenW = 640;
+constexpr int screenH = 480;
+
+void zoom(Draw::Transform& t, float val)
+{
+  t.scale += val;
+  t.offset = Vec2(screenW, screenH) / t.scale / 2.f;
+  // t.offset -= val * 2;
+}
+
 int main(int argc, char** argv)
 {
   Draw::setCircleCallback(raylib_circle);
   Draw::setLineCallback(raylib_line);
 
-  constexpr int screenW = 640;
-  constexpr int screenH = 480;
-
   Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 10;
+  transform.scale = 7;
   transform.offset = Vec2(screenW, screenH) / transform.scale / 2;
 
   System system;
   grid(system);
 
   InitWindow(screenW, screenH, "Cloth");
-  SetTargetFPS(kTargetFPS);
+  SetTargetFPS(60);
 
   Vec2 lastMouse;
   std::vector<ID> toDelete;
@@ -104,6 +112,8 @@ int main(int argc, char** argv)
       system.clear();
       grid(system);
     }
+
+    zoom(transform, GetMouseWheelMove() * (IsKeyDown(KEY_LEFT_SHIFT) ? 0.5f : 1.f));
 
     system.update(GetFrameTime());
 

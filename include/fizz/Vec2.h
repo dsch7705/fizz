@@ -40,11 +40,10 @@ struct Vec2 {
   inline static float mag(const Vec2& vec) { return vec.mag(); }
 
   inline void normalize() { scale(1.0 / mag()); }
-  inline static Vec2 normalize(const Vec2& vec)
+  inline static Vec2 normalize(Vec2 vec)
   {
-    Vec2 norm(vec);
-    norm.normalize();
-    return norm;
+    vec.normalize();
+    return vec;
   }
 
   inline float dot(const Vec2& other) const { return (x * other.x + y * other.y); }
@@ -66,7 +65,13 @@ struct Vec2 {
   }
 
   inline void operator+=(const Vec2& other) { add(other); }
+  inline void operator+=(float val)
+  {
+    x += val;
+    y += val;
+  }
   inline void operator-=(const Vec2& other) { sub(other); }
+  inline void operator-=(float val) { *this += -val; }
   inline void operator*=(float factor) { scale(factor); }
   inline bool operator==(const Vec2& other) const { return (x == other.x && y == other.y); }
 
