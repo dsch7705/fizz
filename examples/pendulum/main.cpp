@@ -1,19 +1,20 @@
 #include "Pendulum.h"
 
-#include "fizz/Constants.h"
 #include "fizz/Draw.h"
 
-#include "../raylib_Draw.h"
+#include "../SDL_draw_impl.h"
 
-#include <iostream>
+SDL_Window* sdl_window;
+SDL_Renderer* sdl_renderer;
 
 int main(int argc, char** argv)
 {
-  Draw::setCircleCallback(raylib_circle);
-  Draw::setLineCallback(raylib_line);
-
   constexpr int screenW = 640;
   constexpr int screenH = 480;
+
+  if (!sdl_setup(screenW, screenH)) {
+    return -1;
+  }
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 50;
@@ -23,15 +24,30 @@ int main(int argc, char** argv)
   double distance = screenH / transform.scale / 2 / links * 0.9;
   Pendulum p(2, Vec2(0, 0), distance, false);
 
-  InitWindow(screenW, screenH, "Pendulum");
-  SetTargetFPS(60);
+  SDL_Event event;
+  bool running = true;
+  while (running) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_EVENT_QUIT:
+          running = false;
+          break;
 
-  while (!WindowShouldClose()) {
-    p.update(GetFrameTime());
+        default:
+          break;
+      }
+    }
 
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-    p.draw(Draw::Color{0, 0, 0, 255});
-    EndDrawing();
+    p.update(calc_dt());
+
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
+    SDL_RenderClear(sdl_renderer);
+
+    p.draw({0, 0, 0, 255});
+
+    SDL_RenderPresent(sdl_renderer);
   }
+
+  sdl_cleanup();
+  return 0;
 }

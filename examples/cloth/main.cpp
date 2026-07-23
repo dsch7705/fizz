@@ -4,7 +4,8 @@
 #include "fizz/constraints/DistanceConstraint.h"
 #include "fizz/constraints/SpringConstraint.h"
 
-#include "../raylib_Draw.h"
+// #include "../raylib_Draw.h"
+#include "../SDL_draw_impl.h"
 
 #include <iostream>
 #include <string>
@@ -70,10 +71,14 @@ void zoom(Draw::Transform& t, float val)
   // t.offset -= val * 2;
 }
 
+SDL_Window* sdl_window = nullptr;
+SDL_Renderer* sdl_renderer = nullptr;
+
 int main(int argc, char** argv)
 {
-  Draw::setCircleCallback(raylib_circle);
-  Draw::setLineCallback(raylib_line);
+  if (!sdl_setup(screenW, screenH)) {
+    return -1;
+  }
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 7;
@@ -82,16 +87,54 @@ int main(int argc, char** argv)
   System system;
   grid(system);
 
-  InitWindow(screenW, screenH, "Cloth");
-  SetTargetFPS(60);
+  // InitWindow(screenW, screenH, "Cloth");
+  // SetTargetFPS(60);
 
   Vec2 lastMouse;
   std::vector<ID> toDelete;
-  while (!WindowShouldClose()) {
-    Vec2 mouse(GetMouseX(), GetMouseY());
+
+  bool running = true;
+  bool mouseDown = false;
+
+  SDL_Event event;
+  while (running) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+        case SDL_EVENT_QUIT:
+          running = false;
+          break;
+
+        case SDL_EVENT_MOUSE_BUTTON_DOWN:
+          if (event.button.button == SDL_BUTTON_LEFT) {
+            mouseDown = true;
+          }
+          break;
+
+        case SDL_EVENT_MOUSE_BUTTON_UP:
+          if (event.button.button == SDL_BUTTON_LEFT) {
+            mouseDown = false;
+          }
+          break;
+
+        case SDL_EVENT_KEY_DOWN:
+          switch (event.key.key) {
+            case SDLK_R:
+              system.clear();
+              grid(system);
+              break;
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    Vec2 mouse;
+    SDL_GetMouseState(&mouse.x, &mouse.y);
     mouse = Draw::screenToWorld(mouse);
 
-    if (IsMouseButtonDown(MOUSE_LEFT_BUTTON)) {
+    if (mouseDown) {
       for (auto& constraint : system.constraints()) {
         auto& s = std::get<SpringConstraint>(constraint);
         const auto& b0 = system.getBody(s.b0());
@@ -108,24 +151,20 @@ int main(int argc, char** argv)
       toDelete.clear();
     }
 
-    if (IsKeyPressed(KEY_R)) {
-      system.clear();
-      grid(system);
-    }
+    // zoom(transform, GetMouseWheelMove() * (IsKeyDown(KEY_LEFT_SHIFT) ? 0.5f : 1.f));
 
-    zoom(transform, GetMouseWheelMove() * (IsKeyDown(KEY_LEFT_SHIFT) ? 0.5f : 1.f));
+    system.update(calc_dt());
 
-    system.update(GetFrameTime());
+    SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
+    SDL_RenderClear(sdl_renderer);
 
-    BeginDrawing();
-
-    ClearBackground(BLACK);
     system.draw(Draw::Color{255, 255, 255, 255});
 
-    DrawText(std::to_string(GetFPS()).c_str(), 5, 5, 30, GREEN);
-
-    EndDrawing();
+    SDL_RenderPresent(sdl_renderer);
 
     lastMouse = mouse;
   }
+
+  sdl_cleanup();
+  return 0;
 }

@@ -8,6 +8,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(CMAKE_BUILD_TYPE RelWithDebInfo)
+
 set(ASAN OFF)
 if(ASAN)
   add_compile_options(-fsanitize=address)

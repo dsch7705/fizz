@@ -18,6 +18,7 @@ fizz is a physics library that leverages a traditional Verlet integrator for sup
 - CMake 3.30+
 
 ```
+git clone --recurse-submodules https://github.com/dsch7705/fizz.git
 cd fizz
 cmake -S . -B build -DBUILD_FIZZ_EXAMPLES=ON
 cmake --build build
