@@ -1,11 +1,3 @@
-include(FetchContent)
-
-FetchContent_Declare(
-  raylib
-  GIT_REPOSITORY https://github.com/raysan5/raylib.git
-)
-FetchContent_MakeAvailable(raylib)
-
 add_subdirectory(vendor)
 
 add_subdirectory(pendulum)

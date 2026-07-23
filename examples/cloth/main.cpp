@@ -5,7 +5,7 @@
 #include "fizz/constraints/SpringConstraint.h"
 
 // #include "../raylib_Draw.h"
-#include "../SDL_Draw_impl.h"
+#include "../SDL_draw_impl.h"
 
 #include <iostream>
 #include <string>
@@ -76,15 +76,9 @@ SDL_Renderer* sdl_renderer = nullptr;
 
 int main(int argc, char** argv)
 {
-  if (!SDL_Init(SDL_INIT_VIDEO)) {
-    std::cout << "Failed to initialize SDL\n";
+  if (!sdl_setup(screenW, screenH)) {
     return -1;
   }
-  SDL_CreateWindowAndRenderer("Cloth", screenW, screenH, 0, &sdl_window, &sdl_renderer);
-  SDL_SetRenderVSync(sdl_renderer, 1);
-
-  Draw::setCircleCallback(sdl_circle);
-  Draw::setLineCallback(sdl_line);
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 7;
@@ -171,5 +165,6 @@ int main(int argc, char** argv)
     lastMouse = mouse;
   }
 
+  sdl_cleanup();
   return 0;
 }

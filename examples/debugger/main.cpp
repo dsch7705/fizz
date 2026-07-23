@@ -1,21 +1,18 @@
-#include "../SDL_Draw_impl.h"
+#include "../SDL_draw_impl.h"
 
 #include "fizz/System.h"
 
 #include <iostream>
 
-SDL_Renderer* sdl_renderer = nullptr;
 SDL_Window* sdl_window = nullptr;
+SDL_Renderer* sdl_renderer = nullptr;
 
 int main()
 {
   // SDL setup
-  if (!SDL_Init(SDL_INIT_VIDEO)) {
-    std::cout << "Failed to initialize SDL";
+  if (!sdl_setup(640, 480)) {
     return -1;
   }
-  SDL_CreateWindowAndRenderer("Debugger", 640, 480, 0, &sdl_window, &sdl_renderer);
-  SDL_SetRenderVSync(sdl_renderer, 1);
 
   // fizz setup
   Draw::setCircleCallback(sdl_circle);
@@ -56,9 +53,6 @@ int main()
     SDL_RenderPresent(sdl_renderer);
   }
 
-  SDL_DestroyRenderer(sdl_renderer);
-  SDL_DestroyWindow(sdl_window);
-  SDL_Quit();
-
+  sdl_cleanup();
   return 0;
 }

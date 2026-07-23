@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iostream>
 
+extern SDL_Window* sdl_window;
 extern SDL_Renderer* sdl_renderer;
 
 inline SDL_Texture* const circle_tex()
@@ -84,4 +85,26 @@ inline float calc_dt()
   lastPerfCounter = perfCounter;
 
   return dt;
+}
+
+inline bool sdl_setup(int w, int h)
+{
+  if (!SDL_Init(SDL_INIT_VIDEO)) {
+    std::cout << "Failed to initialize SDL\n";
+    return false;
+  }
+  SDL_CreateWindowAndRenderer("Cloth", w, h, 0, &sdl_window, &sdl_renderer);
+  SDL_SetRenderVSync(sdl_renderer, 1);
+
+  Draw::setCircleCallback(sdl_circle);
+  Draw::setLineCallback(sdl_line);
+
+  return true;
+}
+
+inline void sdl_cleanup()
+{
+  SDL_DestroyRenderer(sdl_renderer);
+  SDL_DestroyWindow(sdl_window);
+  SDL_Quit();
 }
