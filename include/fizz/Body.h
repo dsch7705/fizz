@@ -20,6 +20,8 @@ class Body {
   float mass;
   bool isKinematic;
 
+  bool isVisible;
+
   // Adds a force to be applied this simulation step; cleared every step
   void addForce(const Vec2& f);
   // Adds a force to be applied this simulation sub-step; cleared every sub-step

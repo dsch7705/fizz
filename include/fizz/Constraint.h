@@ -13,12 +13,18 @@ class Body;
 class System;
 
 struct Constraint {
-  Constraint(System* system, ID id) : m_system(system), m_id(id) {}
+  Constraint(System* system, ID id, bool isEnabled = true, bool isVisible = true)
+      : m_system(system), m_id(id), isEnabled(true), isVisible(true)
+  {
+  }
   virtual ~Constraint() {}
   virtual void solve() = 0;
   virtual void draw(Draw::Color color) const {}
 
   ID id() const { return m_id; }
+
+  bool isEnabled;
+  bool isVisible;
 
  protected:
   System* m_system;

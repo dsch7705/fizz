@@ -36,18 +36,13 @@ class System {
   ID createBody(const Vec2& pos, float radius = 0.2, bool isKinematic = false, float mass = 1.0);
   Body& getBody(ID id);
 
+  Constraint& getConstraintBase(ID id) { return constraintBase(m_constraints[id]); }
+
   template <typename T, typename... Args>
     requires std::derived_from<T, Constraint>
   ID createConstraint(Args... args)
   {
-    // auto constraint = std::make_unique<T>(args...);
-    // T* ptr = constraint.get();
-    // m_constraints.emplace(constraint->id(), std::move(constraint));
-    //
-    // return ptr;
-    ID id = m_constraints.emplace_back(T(this, m_constraints.getNextID(), std::forward<Args>(args)...));
-
-    return id;
+    return m_constraints.emplace_back(T(this, m_constraints.getNextID(), std::forward<Args>(args)...));
   }
   void removeConstraint(ID id);
 

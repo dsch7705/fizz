@@ -7,7 +7,14 @@
 #include <iostream>
 
 Body::Body(ID id, const Vec2& pos, float radius, bool isKinematic, float mass)
-    : m_id(id), m_pos(pos), m_lastPos(pos), m_velocity(Vec2(0.0)), radius(radius), mass(mass), isKinematic(isKinematic)
+    : m_id(id),
+      m_pos(pos),
+      m_lastPos(pos),
+      m_velocity(Vec2(0.0)),
+      radius(radius),
+      mass(mass),
+      isKinematic(isKinematic),
+      isVisible(true)
 {
 }
 
@@ -48,6 +55,9 @@ void Body::addImpulse(const Vec2& j)
 
 void Body::draw(Draw::Color color) const
 {
+  if (!isVisible)
+    return;
+
   Draw::circle(m_pos, radius, color);
 }
 

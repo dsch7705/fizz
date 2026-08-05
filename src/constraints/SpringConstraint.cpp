@@ -17,6 +17,10 @@ SpringConstraint::SpringConstraint(System* system, ID id, ID b0, ID b1, float k,
 
 void SpringConstraint::solve()
 {
+  // TODO: centeralize this logic for all constraints
+  if (!isEnabled)
+    return;
+
   Body& body0 = m_system->getBody(m_b0);
   Body& body1 = m_system->getBody(m_b1);
 
@@ -60,6 +64,10 @@ void SpringConstraint::solve()
 
 void SpringConstraint::draw(Draw::Color color) const
 {
+  // TODO: centralize for all constraints
+  if (!isVisible)
+    return;
+
   const auto& body0 = m_system->getBody(m_b0);
   const auto& body1 = m_system->getBody(m_b1);
 

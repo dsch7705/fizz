@@ -13,6 +13,9 @@ DistanceConstraint::DistanceConstraint(System* system, ID id, ID b0, ID b1) : Pa
 
 void DistanceConstraint::solve()
 {
+  if (!isEnabled)
+    return;
+
   Body& body0 = m_system->getBody(m_b0);
   Body& body1 = m_system->getBody(m_b1);
 
@@ -42,6 +45,9 @@ void DistanceConstraint::solve()
 
 void DistanceConstraint::draw(Draw::Color color) const
 {
+  if (!isVisible)
+    return;
+
   Body& body0 = m_system->getBody(m_b0);
   Body& body1 = m_system->getBody(m_b1);
   Draw::line(body0.pos(), body1.pos(), color);

@@ -5,6 +5,9 @@
 
 void PositionConstraint::solve()
 {
+  if (!isEnabled)
+    return;
+
   for (ID b : m_bodies) {
     Body& body = m_system->getBody(b);
 
