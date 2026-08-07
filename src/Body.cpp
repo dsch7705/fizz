@@ -63,6 +63,10 @@ void Body::draw(Draw::Color color) const
 
 void Body::setPos(const Vec2& pos)
 {
+  assert(isKinematic && "Cannot explicitly set the position of a non-kinematic body.");
+  if (!isKinematic)
+    return;
+
+  m_lastPos = m_pos;
   m_pos = pos;
-  m_lastPos = pos;
 }
