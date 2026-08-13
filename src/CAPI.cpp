@@ -37,8 +37,19 @@ FIZZ_API void system_draw(void* ptr, Draw::Color color)
 FIZZ_API ID system_create_body(void* ptr, float x, float y, float radius, bool isKinematic, float mass)
 {
   auto sys = static_cast<System*>(ptr);
-  ID id = sys->createBody({x, y}, radius, isKinematic, mass);
-  return id;
+  return sys->createBody({x, y}, radius, isKinematic, mass);
+}
+
+FIZZ_API ID system_create_distance_constraint(void* ptr, ID b0, ID b1)
+{
+  auto sys = static_cast<System*>(ptr);
+  return sys->createConstraint<DistanceConstraint>(b0, b1);
+}
+
+FIZZ_API ID system_create_spring_constraint(void* ptr, ID b0, ID b1, float k, float damping)
+{
+  auto sys = static_cast<System*>(ptr);
+  return sys->createConstraint<SpringConstraint>(b0, b1, k, damping);
 }
 
 // Draw

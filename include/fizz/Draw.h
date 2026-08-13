@@ -19,7 +19,7 @@ using LineCallback = std::function<void(const Vec2& p0, const Vec2& p1, Color co
 
 struct Transform {
   Vec2 offset;
-  double scale;
+  float scale;
 };
 
 void setCircleCallback(CircleCallback func);
