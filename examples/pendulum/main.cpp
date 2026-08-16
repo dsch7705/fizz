@@ -11,15 +11,15 @@ SDL_Renderer* sdl_renderer;
 int main(int argc, char** argv)
 {
   Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 75.f;
+  transform.scale = 300.f;
 
   if (!sdl_setup("Pendulum")) {
     return -1;
   }
 
   int links = 2;
-  double distance = transform.screenSize.y / transform.scale / 2 / links * 0.9;
-  Pendulum p(2, Vec2(0, 2.f), distance);
+  double distance = 0.2f;  ////transform.screenSize.y / transform.scale / 2 / links * 0.9;
+  Pendulum p(2, Vec2(0, 0.5f), distance);
   SDL_Event event;
   bool running = true;
   while (running) {
