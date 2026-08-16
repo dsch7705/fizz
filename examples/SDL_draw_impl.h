@@ -11,7 +11,7 @@
 extern SDL_Window* sdl_window;
 extern SDL_Renderer* sdl_renderer;
 
-inline SDL_Texture* const circle_tex()
+inline SDL_Texture* circle_tex()
 {
   static SDL_Texture* tex = nullptr;
   constexpr int tex_w = 128;
@@ -19,6 +19,7 @@ inline SDL_Texture* const circle_tex()
   if (!tex) {
     tex = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, tex_w, tex_w);
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_LINEAR);
 
     SDL_SetRenderTarget(sdl_renderer, tex);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 0);
@@ -59,6 +60,24 @@ inline SDL_Texture* const circle_tex()
   return tex;
 }
 
+inline SDL_Texture* line_tex()
+{
+  static SDL_Texture* tex = nullptr;
+
+  if (!tex) {
+    tex = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureScaleMode(tex, SDL_SCALEMODE_LINEAR);
+
+    SDL_SetRenderTarget(sdl_renderer, tex);
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
+    SDL_RenderClear(sdl_renderer);
+    SDL_SetRenderTarget(sdl_renderer, nullptr);
+  }
+
+  return tex;
+}
+
 inline void sdl_circle(const Vec2& center, float radius, Draw::Color color)
 {
   SDL_Texture* tex = circle_tex();
@@ -69,10 +88,20 @@ inline void sdl_circle(const Vec2& center, float radius, Draw::Color color)
   SDL_RenderTexture(sdl_renderer, tex, nullptr, &dst);
 }
 
-inline void sdl_line(const Vec2& p0, const Vec2& p1, Draw::Color color)
+inline void sdl_line(const Vec2& p0, const Vec2& p1, float thickness, Draw::Color color)
 {
-  SDL_SetRenderDrawColor(sdl_renderer, color.r, color.g, color.b, color.a);
-  SDL_RenderLine(sdl_renderer, p0.x, p0.y, p1.x, p1.y);
+  // SDL_SetRenderDrawColor(sdl_renderer, color.r, color.g, color.b, color.a);
+  // SDL_RenderLine(sdl_renderer, p0.x, p0.y, p1.x, p1.y);
+
+  SDL_Texture* tex = line_tex();
+  SDL_SetTextureColorMod(tex, color.r, color.g, color.b);
+
+  SDL_FPoint center{0.f, thickness / 2.f};
+  Vec2 delta = p1 - p0;
+  float angle = std::atan2(delta.y, delta.x) * (180.f / M_PI);
+
+  SDL_FRect dst{p0.x, p0.y - thickness / 2.f, delta.mag(), thickness};
+  SDL_RenderTextureRotated(sdl_renderer, tex, nullptr, &dst, angle, &center, SDL_FLIP_NONE);
 }
 
 inline float calc_dt()
@@ -104,6 +133,9 @@ inline bool sdl_setup(int w, int h)
 
 inline void sdl_cleanup()
 {
+  SDL_DestroyTexture(circle_tex());
+  SDL_DestroyTexture(line_tex());
+
   SDL_DestroyRenderer(sdl_renderer);
   SDL_DestroyWindow(sdl_window);
   SDL_Quit();

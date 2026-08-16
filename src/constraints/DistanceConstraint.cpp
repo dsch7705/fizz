@@ -4,7 +4,8 @@
 #include "fizz/Draw.h"
 #include "fizz/System.h"
 
-DistanceConstraint::DistanceConstraint(System* system, ID id, ID b0, ID b1) : PairConstraint(system, id, b0, b1)
+DistanceConstraint::DistanceConstraint(System* system, ID id, ID b0, ID b1, float width)
+    : PairConstraint(system, id, b0, b1, width)
 {
   const auto& body0 = system->getBody(b0);
   const auto& body1 = system->getBody(b1);
@@ -50,5 +51,5 @@ void DistanceConstraint::draw(Draw::Color color) const
 
   Body& body0 = m_system->getBody(m_b0);
   Body& body1 = m_system->getBody(m_b1);
-  Draw::line(body0.pos(), body1.pos(), color);
+  Draw::line(body0.pos(), body1.pos(), width * Draw::getTransform().scale, color);
 }

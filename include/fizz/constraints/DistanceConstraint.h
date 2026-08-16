@@ -3,7 +3,7 @@
 #include "../Constraint.h"
 
 struct DistanceConstraint : public PairConstraint {
-  DistanceConstraint(System* system, ID id, ID b0, ID b1);
+  DistanceConstraint(System* system, ID id, ID b0, ID b1, float width = 0.25f);
 
   float distance;
 

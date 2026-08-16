@@ -40,7 +40,7 @@ FIZZ_API ID system_create_body(void* ptr, float x, float y, float radius, bool i
   return sys->createBody({x, y}, radius, isKinematic, mass);
 }
 
-FIZZ_API ID system_create_distance_constraint(void* ptr, ID b0, ID b1)
+FIZZ_API ID system_create_distance_constraint(void* ptr, ID b0, ID b1, float width)
 {
   auto sys = static_cast<System*>(ptr);
   return sys->createConstraint<DistanceConstraint>(b0, b1);
@@ -66,7 +66,7 @@ FIZZ_API void draw_set_circle_callback(PyCircleCallback py_cb)
 
 FIZZ_API void draw_set_line_callback(PyLineCallback py_cb)
 {
-  Draw::LineCallback cb = [py_cb](const Vec2& p0, const Vec2& p1, Draw::Color color) {
+  Draw::LineCallback cb = [py_cb](const Vec2& p0, const Vec2& p1, float width, Draw::Color color) {
     py_cb(p0.x, p0.y, p1.x, p1.y, color);
   };
   Draw::setLineCallback(cb);

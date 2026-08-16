@@ -3,7 +3,7 @@
 #include "../Constraint.h"
 
 struct SpringConstraint : public PairConstraint {
-  SpringConstraint(System* system, ID id, ID b0, ID b1, float k = 150.0, float damping = 1.0);
+  SpringConstraint(System* system, ID id, ID b0, ID b1, float k = 150.f, float damping = 1.f, float width = 0.5f);
 
   float length;
   float k;

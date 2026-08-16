@@ -9,8 +9,11 @@ SDL_Renderer* sdl_renderer = nullptr;
 
 int main()
 {
+  unsigned int screenW = 800;
+  unsigned int screenH = 600;
+
   // SDL setup
-  if (!sdl_setup(640, 480)) {
+  if (!sdl_setup(screenW, screenH)) {
     return -1;
   }
 
@@ -25,11 +28,18 @@ int main()
 
   Draw::Transform& transform = Draw::getTransform();
   transform.scale = 10;
-  transform.offset = Vec2{5, 2};
+  transform.center(screenW, screenH);
 
   float dt = 0.f;
   uint64_t lastPerfCounter = SDL_GetPerformanceCounter();
   uint64_t perfFreq = SDL_GetPerformanceFrequency();
+
+  SDL_Texture* tex = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 1, 1);
+  SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+  SDL_SetRenderTarget(sdl_renderer, tex);
+  SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
+  SDL_RenderClear(sdl_renderer);
+  SDL_SetRenderTarget(sdl_renderer, nullptr);
 
   bool running = true;
   SDL_Event event;
@@ -45,10 +55,14 @@ int main()
     system.update(dt);
 
     // Rendering
-    SDL_SetRenderDrawColor(sdl_renderer, 0, 255, 255, 255);
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
     SDL_RenderClear(sdl_renderer);
 
     system.draw({0, 0, 0, 255});
+
+    SDL_FRect dst{100.f, 100.f, 100.f, 100.f};
+    SDL_SetTextureColorMod(tex, 0, 0, 0);
+    SDL_RenderTextureRotated(sdl_renderer, tex, nullptr, &dst, 45.0, nullptr, SDL_FLIP_NONE);
 
     SDL_RenderPresent(sdl_renderer);
   }

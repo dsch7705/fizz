@@ -7,8 +7,8 @@
 
 #include <cmath>
 
-SpringConstraint::SpringConstraint(System* system, ID id, ID b0, ID b1, float k, float damping)
-    : PairConstraint(system, id, b0, b1), k(k), damping(damping)
+SpringConstraint::SpringConstraint(System* system, ID id, ID b0, ID b1, float k, float damping, float width)
+    : PairConstraint(system, id, b0, b1, width), k(k), damping(damping)
 {
   const auto& body0 = system->getBody(b0);
   const auto& body1 = system->getBody(b1);
@@ -78,7 +78,7 @@ void SpringConstraint::draw(Draw::Color color) const
   n.normalize();
   Vec2 perp = {-n.y, n.x};
 
-  Draw::line(p0, p1, color);
+  Draw::line(p0, p1, width * Draw::getTransform().scale, color);
 
   // constexpr float coil_spacing = .3f;
   // float half_w = std::min(m_b0->radius, m_b1->radius);

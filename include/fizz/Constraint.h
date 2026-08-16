@@ -34,9 +34,11 @@ struct Constraint {
 };
 
 struct PairConstraint : public Constraint {
-  PairConstraint(System* system, ID id, ID b0, ID b1);
+  PairConstraint(System* system, ID id, ID b0, ID b1, float width);
   ID b0() const { return m_b0; }
   ID b1() const { return m_b1; }
+
+  float width;
 
  protected:
   ID m_b0;

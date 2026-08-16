@@ -19,7 +19,6 @@ class Body {
   float radius;
   float mass;
   bool isKinematic;
-
   bool isVisible;
 
   // Adds a force to be applied this simulation step; cleared every step

@@ -39,8 +39,8 @@ void circle(const Vec2& center, float radius, Color color)
   drawCircleCallback(worldToScreen(center), radius * transform.scale, color);
 }
 
-void line(const Vec2& p0, const Vec2& p1, Color color)
+void line(const Vec2& p0, const Vec2& p1, float thickness, Color color)
 {
-  drawLineCallback(worldToScreen(p0), worldToScreen(p1), color);
+  drawLineCallback(worldToScreen(p0), worldToScreen(p1), thickness, color);
 }
 }  // namespace Draw

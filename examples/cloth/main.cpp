@@ -1,3 +1,4 @@
+#include "SDL3/SDL_events.h"
 #include "fizz/Constants.h"
 #include "fizz/Draw.h"
 #include "fizz/System.h"
@@ -44,13 +45,17 @@ void grid(System& system)
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.02, isAnchor);
+      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.f, isAnchor);
+      Body& body = system.getBody(b);
+      body.isVisible = false;
+
       row.push_back(b);
+      float c_width = 0.1f;
       if (i_x < lastRow.size()) {
-        system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping);
+        system.createConstraint<SpringConstraint>(b, lastRow[i_x], k, damping, c_width);
       }
       if (lastB != -1) {
-        system.createConstraint<SpringConstraint>(b, lastB, k, damping);
+        system.createConstraint<SpringConstraint>(b, lastB, k, damping, c_width);
       }
 
       lastB = b;
@@ -67,8 +72,7 @@ constexpr int screenH = 480;
 void zoom(Draw::Transform& t, float val)
 {
   t.scale += val;
-  t.offset = Vec2(screenW, screenH) / t.scale / 2.f;
-  // t.offset -= val * 2;
+  t.center(screenW, screenH);
 }
 
 SDL_Window* sdl_window = nullptr;
@@ -114,6 +118,10 @@ int main(int argc, char** argv)
           if (event.button.button == SDL_BUTTON_LEFT) {
             mouseDown = false;
           }
+          break;
+
+        case SDL_EVENT_MOUSE_WHEEL:
+          zoom(transform, event.wheel.y);
           break;
 
         case SDL_EVENT_KEY_DOWN:

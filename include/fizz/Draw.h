@@ -15,11 +15,13 @@ struct Color {
 };
 
 using CircleCallback = std::function<void(const Vec2& center, float radius, Color color)>;
-using LineCallback = std::function<void(const Vec2& p0, const Vec2& p1, Color color)>;
+using LineCallback = std::function<void(const Vec2& p0, const Vec2& p1, float thickness, Color color)>;
 
 struct Transform {
   Vec2 offset;
   float scale;
+
+  void center(unsigned int screenW, unsigned int screenH) { offset = Vec2(screenW, screenH) / scale / 2.f; }
 };
 
 void setCircleCallback(CircleCallback func);
@@ -33,6 +35,6 @@ Vec2 screenToWorld(const Vec2& pos);
 // Note: center and radius should be in world space
 void circle(const Vec2& center, float radius, Color color);
 // Note: p0 and p1 should be in world space
-void line(const Vec2& p0, const Vec2& p1, Color color);
+void line(const Vec2& p0, const Vec2& p1, float thickness, Color color);
 
 }  // namespace Draw
