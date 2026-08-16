@@ -9,11 +9,11 @@ SDL_Renderer* sdl_renderer = nullptr;
 
 int main()
 {
-  unsigned int screenW = 800;
-  unsigned int screenH = 600;
+  Draw::Transform& transform = Draw::getTransform();
+  transform.scale = 10.f;
 
   // SDL setup
-  if (!sdl_setup(screenW, screenH)) {
+  if (!sdl_setup("Editor")) {
     return -1;
   }
 
@@ -23,12 +23,8 @@ int main()
 
   System system;
   ID b0 = system.createBody(Vec2{0, 0}, 0.2, true);
-  ID b1 = system.createBody(Vec2{10, 0}, 0.2);
+  ID b1 = system.createBody(Vec2{1, 0}, 0.2);
   system.createConstraint<DistanceConstraint>(b0, b1);
-
-  Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 10;
-  transform.center(screenW, screenH);
 
   float dt = 0.f;
   uint64_t lastPerfCounter = SDL_GetPerformanceCounter();
@@ -47,8 +43,11 @@ int main()
     dt = calc_dt();
 
     while (SDL_PollEvent(&event)) {
+      process_sdl_event(event);
+
       if (event.type == SDL_EVENT_QUIT) {
         running = false;
+        break;
       }
     }
 
@@ -58,11 +57,8 @@ int main()
     SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
     SDL_RenderClear(sdl_renderer);
 
+    Draw::grid(3.f, {255, 0, 255, 32});
     system.draw({0, 0, 0, 255});
-
-    SDL_FRect dst{100.f, 100.f, 100.f, 100.f};
-    SDL_SetTextureColorMod(tex, 0, 0, 0);
-    SDL_RenderTextureRotated(sdl_renderer, tex, nullptr, &dst, 45.0, nullptr, SDL_FLIP_NONE);
 
     SDL_RenderPresent(sdl_renderer);
   }

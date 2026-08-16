@@ -31,7 +31,7 @@ class System {
   System() : m_id(Util::nextId()) {}
 
   bool effectedByGravity{true};
-  float gravity{50};
+  float gravity{-9.81f};
 
   ID createBody(const Vec2& pos, float radius = 0.2, bool isKinematic = false, float mass = 1.0);
   Body& getBody(ID id);

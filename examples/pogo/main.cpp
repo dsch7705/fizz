@@ -1,4 +1,5 @@
 #include "fizz/Constants.h"
+#include "fizz/Draw.h"
 #include "fizz/System.h"
 #include "fizz/constraints/PositionConstraint.h"
 #include "fizz/constraints/SpringConstraint.h"
@@ -10,28 +11,27 @@ SDL_Renderer* sdl_renderer;
 
 int main(int argc, char** argv)
 {
-  constexpr int screenW = 640;
-  constexpr int screenH = 480;
-
-  sdl_setup(screenW, screenH);
-
   Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 50;
-  transform.offset = Vec2(screenW, screenH) / transform.scale / 2;
+  transform.scale = 50.f;
 
-  Vec2 worldSize = Vec2(screenW, screenH) / transform.scale;
+  if (!sdl_setup("Pogo")) {
+    return -1;
+  }
 
   System system;
-  ID b0 = system.createBody({0, -worldSize.y / 2}, 0.5, false, 1.0);
-  ID b1 = system.createBody({0, 0}, 0.5, false, 1.0);
+  ID b0 = system.createBody({0.f, 0.f}, 0.5, true, 1.0);
+  ID b1 = system.createBody({0.f, -1.f}, 0.5, false, 1.0);
   system.createConstraint<SpringConstraint>(b0, b1);
-  system.createConstraint<PositionConstraint>(Vec2(-worldSize.x / 2, -worldSize.y * 2), worldSize / 2, 0.6, b0, b1);
+  // system.createConstraint<PositionConstraint>(Draw::screenToWorld({0, 0}), Draw::screenToWorld(transform.screenSize),
+  //                                             0.6f, b0, b1);
 
   SDL_Event event;
   bool running = true;
   bool space_held = false;
   while (running) {
     while (SDL_PollEvent(&event)) {
+      process_sdl_event(event);
+
       switch (event.type) {
         case SDL_EVENT_QUIT:
           running = false;
@@ -63,6 +63,7 @@ int main(int argc, char** argv)
     SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
     SDL_RenderClear(sdl_renderer);
 
+    Draw::grid(1.f, {0, 0, 0, 32});
     system.draw({0, 0, 0, 255});
 
     SDL_RenderPresent(sdl_renderer);

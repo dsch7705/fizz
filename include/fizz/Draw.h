@@ -20,8 +20,14 @@ using LineCallback = std::function<void(const Vec2& p0, const Vec2& p1, float th
 struct Transform {
   Vec2 offset;
   float scale;
+  Vec2 screenSize;
 
-  void center(unsigned int screenW, unsigned int screenH) { offset = Vec2(screenW, screenH) / scale / 2.f; }
+  // Note: point should be in world space
+  void center(const Vec2& point = {0.f, 0.f});
+  // Note: delta should be in screen space
+  void pan(const Vec2& delta);
+
+  void zoom(float delta);
 };
 
 void setCircleCallback(CircleCallback func);
@@ -36,5 +42,7 @@ Vec2 screenToWorld(const Vec2& pos);
 void circle(const Vec2& center, float radius, Color color);
 // Note: p0 and p1 should be in world space
 void line(const Vec2& p0, const Vec2& p1, float thickness, Color color);
+
+void grid(float thickness, Color color);
 
 }  // namespace Draw

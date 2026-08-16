@@ -31,9 +31,9 @@ void grid(System& system)
   constexpr double size = 0.4;
   constexpr int w = 100;
   constexpr int h = 75;
-  const Vec2 offset(w * size / 2, h * size * 0.8);
+  const Vec2 offset(w * -size / 2, h * size * 0.8);
 
-  constexpr double k = 50000.0;
+  constexpr double k = 1000.0;
   constexpr double damping = -1.0;
 
   constexpr int anchorW = 5;
@@ -45,7 +45,7 @@ void grid(System& system)
     for (int i_x = 0; i_x < w; i_x++) {
       bool isAnchor = !(i_x % 7) && (i_y == 0);
 
-      ID b = system.createBody(Vec2(-offset.x + i_x * size, -offset.y + i_y * size), 0.f, isAnchor);
+      ID b = system.createBody(Vec2(offset.x + i_x * size, offset.y + i_y * size), 0.f, isAnchor, 0.01f);
       Body& body = system.getBody(b);
       body.isVisible = false;
 
@@ -66,33 +66,20 @@ void grid(System& system)
   }
 }
 
-constexpr int screenW = 640;
-constexpr int screenH = 480;
-
-void zoom(Draw::Transform& t, float val)
-{
-  t.scale += val;
-  t.center(screenW, screenH);
-}
-
 SDL_Window* sdl_window = nullptr;
 SDL_Renderer* sdl_renderer = nullptr;
 
 int main(int argc, char** argv)
 {
-  if (!sdl_setup(screenW, screenH)) {
+  Draw::Transform& transform = Draw::getTransform();
+  transform.scale = 7.f;
+
+  if (!sdl_setup("Cloth")) {
     return -1;
   }
 
-  Draw::Transform& transform = Draw::getTransform();
-  transform.scale = 7;
-  transform.offset = Vec2(screenW, screenH) / transform.scale / 2;
-
   System system;
   grid(system);
-
-  // InitWindow(screenW, screenH, "Cloth");
-  // SetTargetFPS(60);
 
   Vec2 lastMouse;
   std::vector<ID> toDelete;
@@ -103,6 +90,8 @@ int main(int argc, char** argv)
   SDL_Event event;
   while (running) {
     while (SDL_PollEvent(&event)) {
+      process_sdl_event(event);
+
       switch (event.type) {
         case SDL_EVENT_QUIT:
           running = false;
@@ -118,10 +107,6 @@ int main(int argc, char** argv)
           if (event.button.button == SDL_BUTTON_LEFT) {
             mouseDown = false;
           }
-          break;
-
-        case SDL_EVENT_MOUSE_WHEEL:
-          zoom(transform, event.wheel.y);
           break;
 
         case SDL_EVENT_KEY_DOWN:

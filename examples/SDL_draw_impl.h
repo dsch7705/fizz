@@ -14,7 +14,7 @@ extern SDL_Renderer* sdl_renderer;
 inline SDL_Texture* circle_tex()
 {
   static SDL_Texture* tex = nullptr;
-  constexpr int tex_w = 128;
+  constexpr int tex_w = 256;
 
   if (!tex) {
     tex = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, tex_w, tex_w);
@@ -82,6 +82,7 @@ inline void sdl_circle(const Vec2& center, float radius, Draw::Color color)
 {
   SDL_Texture* tex = circle_tex();
   SDL_SetTextureColorMod(tex, color.r, color.g, color.b);
+  SDL_SetTextureAlphaMod(tex, color.a);
 
   float diam = 2 * radius;
   SDL_FRect dst{.x = center.x - radius, .y = center.y - radius, .w = diam, .h = diam};
@@ -90,11 +91,9 @@ inline void sdl_circle(const Vec2& center, float radius, Draw::Color color)
 
 inline void sdl_line(const Vec2& p0, const Vec2& p1, float thickness, Draw::Color color)
 {
-  // SDL_SetRenderDrawColor(sdl_renderer, color.r, color.g, color.b, color.a);
-  // SDL_RenderLine(sdl_renderer, p0.x, p0.y, p1.x, p1.y);
-
   SDL_Texture* tex = line_tex();
   SDL_SetTextureColorMod(tex, color.r, color.g, color.b);
+  SDL_SetTextureAlphaMod(tex, color.a);
 
   SDL_FPoint center{0.f, thickness / 2.f};
   Vec2 delta = p1 - p0;
@@ -102,6 +101,30 @@ inline void sdl_line(const Vec2& p0, const Vec2& p1, float thickness, Draw::Colo
 
   SDL_FRect dst{p0.x, p0.y - thickness / 2.f, delta.mag(), thickness};
   SDL_RenderTextureRotated(sdl_renderer, tex, nullptr, &dst, angle, &center, SDL_FLIP_NONE);
+}
+
+inline void process_sdl_event(const SDL_Event& event)
+{
+  auto& transform = Draw::getTransform();
+  switch (event.type) {
+    case SDL_EVENT_WINDOW_RESIZED:
+      transform.screenSize = {static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)};
+      break;
+
+    case SDL_EVENT_MOUSE_WHEEL: {
+      transform.zoom(event.wheel.y);
+      break;
+    }
+
+    case SDL_EVENT_MOUSE_MOTION:
+      if (event.motion.state & SDL_BUTTON_RMASK) {
+        transform.pan({event.motion.xrel, event.motion.yrel});
+      }
+      break;
+
+    default:
+      break;
+  }
 }
 
 inline float calc_dt()
@@ -116,17 +139,21 @@ inline float calc_dt()
   return dt;
 }
 
-inline bool sdl_setup(int w, int h)
+inline bool sdl_setup(const char* title, unsigned int w = 800, unsigned int h = 600)
 {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     std::cout << "Failed to initialize SDL\n";
     return false;
   }
-  SDL_CreateWindowAndRenderer("Cloth", w, h, 0, &sdl_window, &sdl_renderer);
+  SDL_CreateWindowAndRenderer(title, w, h, 0, &sdl_window, &sdl_renderer);
   SDL_SetRenderVSync(sdl_renderer, 1);
 
   Draw::setCircleCallback(sdl_circle);
   Draw::setLineCallback(sdl_line);
+
+  auto& transform = Draw::getTransform();
+  transform.screenSize = {static_cast<float>(w), static_cast<float>(h)};
+  transform.center();
 
   return true;
 }
