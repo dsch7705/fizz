@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 4.0)
 project(fizz)
 
-set(CMAKE_CXX_STANDARD 23)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -19,6 +21,7 @@ endif()
 set(FIZZ_PYTHON_DIR ${CMAKE_SOURCE_DIR}/python/fizz)
 add_subdirectory(src)
 
+option(BUILD_FIZZ_EXAMPLES OFF)
 if(BUILD_FIZZ_EXAMPLES)
   add_subdirectory(examples)
 endif()

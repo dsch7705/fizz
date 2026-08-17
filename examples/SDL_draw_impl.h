@@ -6,7 +6,7 @@
 #include "SDL3/SDL.h"
 
 #include <cmath>
-#include <iostream>
+#include <print>
 
 extern SDL_Window* sdl_window;
 extern SDL_Renderer* sdl_renderer;
@@ -101,6 +101,8 @@ inline void sdl_line(const Vec2& p0, const Vec2& p1, float thickness, Draw::Colo
 
   SDL_FRect dst{p0.x, p0.y - thickness / 2.f, delta.mag(), thickness};
   SDL_RenderTextureRotated(sdl_renderer, tex, nullptr, &dst, angle, &center, SDL_FLIP_NONE);
+  // SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, 255);
+  // SDL_RenderLine(sdl_renderer, p0.x, p0.y, p1.x, p1.y);
 }
 
 inline void process_sdl_event(const SDL_Event& event)
@@ -108,16 +110,15 @@ inline void process_sdl_event(const SDL_Event& event)
   auto& transform = Draw::getTransform();
   switch (event.type) {
     case SDL_EVENT_WINDOW_RESIZED:
-      transform.screenSize = {static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)};
+      transform.resizeScreen({static_cast<float>(event.window.data1), static_cast<float>(event.window.data2)});
       break;
 
-    case SDL_EVENT_MOUSE_WHEEL: {
+    case SDL_EVENT_MOUSE_WHEEL:
       transform.zoom(event.wheel.y);
       break;
-    }
 
     case SDL_EVENT_MOUSE_MOTION:
-      if (event.motion.state & SDL_BUTTON_RMASK) {
+      if (event.motion.state & SDL_BUTTON_LMASK) {
         transform.pan({event.motion.xrel, event.motion.yrel});
       }
       break;
@@ -135,17 +136,21 @@ inline float calc_dt()
   uint64_t perfCounter = SDL_GetPerformanceCounter();
   float dt = (perfCounter - lastPerfCounter) / static_cast<double>(perfFreq);
   lastPerfCounter = perfCounter;
+  // std::println("{}", 1.f / dt);
 
   return dt;
 }
 
-inline bool sdl_setup(const char* title, unsigned int w = 800, unsigned int h = 600)
+inline bool sdl_setup(const char* title,
+                      unsigned int w = 800,
+                      unsigned int h = 600,
+                      SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE)
 {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
-    std::cout << "Failed to initialize SDL\n";
+    std::println("Failed to initialize SDL");
     return false;
   }
-  SDL_CreateWindowAndRenderer(title, w, h, 0, &sdl_window, &sdl_renderer);
+  SDL_CreateWindowAndRenderer(title, w, h, flags, &sdl_window, &sdl_renderer);
   SDL_SetRenderVSync(sdl_renderer, 1);
 
   Draw::setCircleCallback(sdl_circle);

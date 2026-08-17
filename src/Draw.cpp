@@ -23,13 +23,20 @@ void Transform::center(const Vec2& point)
 
 void Transform::pan(const Vec2& delta)
 {
-  offset += delta / transform.scale;
+  offset += delta / scale;
 }
 
 void Transform::zoom(float delta)
 {
   Vec2 p_center = screenToWorld(screenSize / 2.f);
   scale = std::max(.1f, scale + (delta * scale * 0.1f));
+  center(p_center);
+}
+
+void Transform::resizeScreen(const Vec2& size)
+{
+  Vec2 p_center = screenToWorld(screenSize / 2.f);
+  screenSize = size;
   center(p_center);
 }
 

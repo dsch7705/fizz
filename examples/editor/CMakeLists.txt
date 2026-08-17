@@ -1,0 +1,7 @@
+if(CMAKE_CXX_STANDARD VERSION_LESS "26")
+  message("Editor example requires C++26 (current=${CMAKE_CXX_STANDARD}); skipping")
+else()
+  add_executable(editor main.cpp Editor.cpp)
+  target_link_libraries(editor PRIVATE fizz SDL3::SDL3 ImGui)
+  target_compile_options(editor PRIVATE -freflection)
+endif()

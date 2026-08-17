@@ -28,6 +28,8 @@ struct Transform {
   void pan(const Vec2& delta);
 
   void zoom(float delta);
+
+  void resizeScreen(const Vec2& size);
 };
 
 void setCircleCallback(CircleCallback func);
