@@ -82,12 +82,13 @@ void grid(float thickness, Color color)
     if (i == 0) {
       col.a = 255;
     }
-    if (i % 5 == 0) {
+    else if (i % 5 == 0) {
       col.a = std::min(255.f, col.a * 2.5f);
     }
 
-    line({static_cast<float>(i), -size}, {static_cast<float>(i), size}, thickness, col);
-    line({-size, static_cast<float>(i)}, {size, static_cast<float>(i)}, thickness, col);
+    float f_i = static_cast<float>(i);
+    line({f_i, -size}, {f_i, size}, thickness, col);
+    line({-size, f_i}, {size, f_i}, thickness, col);
   }
 }
 

@@ -108,8 +108,9 @@ struct PopupView<PopupID::CreateBody> {
   static void render()
   {
     if (ImGui::BeginPopup(popupLabel(PopupID::CreateBody).data())) {
-      ImGui::Button("Test");
-
+      if (ImGui::Button("Close")) {
+        ImGui::CloseCurrentPopup();
+      }
       ImGui::EndPopup();
     }
   }
