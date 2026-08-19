@@ -36,7 +36,7 @@ int main()
   ImGui_ImplSDLRenderer3_Init(sdl_renderer);
   ImGuiIO& io = ImGui::GetIO();
 
-  // Editor editor{};
+  Editor::Window<Editor::WindowID::Inspector>::open();
 
   bool running = true;
   SDL_Event event;
@@ -54,7 +54,7 @@ int main()
 
         case SDL_EVENT_KEY_DOWN:
           if (event.key.key == SDLK_SPACE) {
-            Editor::Popup<Editor::PopupID::CreateBody>::open();
+            // Editor::Popup<Editor::PopupID::CreateBody>::open();
           }
           break;
 
@@ -77,10 +77,7 @@ int main()
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui::NewFrame();
 
-    ImGui::Begin("Editor");
     Editor::render();
-    ImGui::End();
-    // editor.createBodyPopup();
 
     ImGui::Render();
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), sdl_renderer);
